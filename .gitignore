@@ -2,6 +2,8 @@ node_modules/
 .taste-skill/
 .impeccable/
 graphify-out/
+dist_itch/
+fossilis_expedition.zip
 *.log
 .DS_Store
 Thumbs.db
