@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fossilis · la mesa en juego</title>
+<style>
+  body{margin:0;background:#0D0F10;color:#F4EFE4;font:14px/1.4 system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px}
+  header{display:flex;gap:14px;justify-content:center;align-items:baseline;width:100%;flex-wrap:wrap}
+  h1{font:600 18px/1.2 Georgia,serif;margin:0;letter-spacing:.02em}
+  span.estado{font-size:12px;color:#A97F3C;letter-spacing:.08em}
+  .ventana{width:min(1380px, calc(100vw - 40px));height:min(862px, calc(100svh - 96px));border:1px solid #2A3236;border-radius:14px;background:#000;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  iframe{width:100%;height:100%;border:0;display:block}
+  body.solo{display:block;padding:0;background:#000}
+  body.solo header{display:none}
+  body.solo .ventana{border:0;border-radius:0;box-shadow:none}
+</style>
+</head>
+<body>
+<header><h1>Fossilis · la mesa en juego</h1><span class="estado" id="e">cargando la app…</span></header>
+<div class="ventana"><iframe id="app" src="http://127.0.0.1:8123/" title="juego"></iframe></div>
+<script>
+  const e = document.getElementById('e'), f = document.getElementById('app');
+  const q = new URLSearchParams(location.search);
+  if (q.get('solo')) document.body.classList.add('solo');
+  if (q.get('w')) {
+    const v = document.querySelector('.ventana');
+    v.style.width = q.get('w') + 'px';
+    v.style.height = (q.get('h') || '900') + 'px';
+  }
+  let abierto = false, temaHecho = false, pasoHecho = false;
+  const tema = q.get('tema');
+  const paso = q.get('paso');
+  const menu = paso === 'menu' || paso === 'tema';
+  setInterval(() => {
+    let d; try { d = f.contentDocument; } catch (err) { return; }
+    if (!d || !d.body) return;
+    if (!abierto) {
+      if (tema && !temaHecho) {
+        const chip = d.querySelector('button[data-tema="'+tema+'"]');
+        if (chip) { chip.click(); temaHecho = true; e.textContent = 'tema · ' + tema; }
+        return;
+      }
+      if (menu) {
+        if (paso === 'tema') {
+          const det = d.querySelector('details');
+          if (det) det.open = true;
+          e.textContent = 'menú · tema';
+        } else e.textContent = 'menú · ' + (tema || 'gabinete');
+        return;
+      }
+      const b = [...d.querySelectorAll('button')].find(x => /Abrir el yacimiento/.test(x.innerText));
+      if (b) { b.click(); abierto = true; e.textContent = 'montaje · abriendo el yacimiento…'; }
+    } else if (d.querySelector('.escena')) {
+      const listo = (d.body.innerText || '').includes('energía');
+      e.textContent = listo ? 'en juego · listo' : 'en juego';
+      const paso = q.get('paso');
+      if (listo && paso && !pasoHecho) {
+        const mapa = {dinos: /Dinos/, mercado: /Mercado/, equipo: /equipo/i, marcador: /Marcador/, pausa: /Pausa/};
+        const re = mapa[paso];
+        const b = re ? [...d.querySelectorAll('button')].find(x => re.test(x.innerText) && x.offsetParent !== null) : null;
+        if (b) { b.click(); pasoHecho = true; e.textContent = 'paso · ' + paso; }
+      }
+    }
+  }, 250);
+</script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+{
+ "url": ".impeccable/mocks/decision/modular.html",
+ "at": "2026-10-18T15:20:27.779Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.18
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 900,
+     "screens": 1,
+     "words": 77,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 0,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": []
+    },
+    "hero": {
+     "text": "FOSSILIS",
+     "words": 1,
+     "chars": 8,
+     "lines": 1,
+     "size": 46,
+     "vw": 3.2,
+     "font": "Archivo",
+     "weight": 800,
+     "tracking": -0.01,
+     "leading": 1,
+     "upper": true,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "left",
+     "widthRatio": 0.25,
+     "top": 16,
+     "tag": "b",
+     "kind": "heading"
+    },
+    "h1": null,
+    "headings": [
+     {
+      "text": "FOSSILIS",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 46,
+      "vw": 3.2,
+      "font": "Archivo",
+      "weight": 800,
+      "tracking": -0.01,
+      "leading": 1,
+      "upper": true,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.25,
+      "top": 16,
+      "tag": "b",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "ui-monospace",
+       "share": 0.64,
+       "mono": false
+      },
+      {
+       "family": "Archivo",
+       "share": 0.36,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      7,
+      8,
+      9,
+      10,
+      12,
+      19,
+      46
+     ],
+     "sizeCount": 7,
+     "notLoaded": [],
+     "body": null,
+     "measureChars": null,
+     "max": {
+      "size": 46,
+      "vw": 3.2,
+      "font": "Archivo",
+      "text": "FOSSILIS"
+     },
+     "monoShare": 0.64,
+     "monoProseShare": 0.64,
+     "monoFamilies": [
+      "ui-monospace"
+     ],
+     "monoSamples": [
+      "YACIMIENTO N.º 025",
+      "TURNO 07 · FASE DE ACCIONES",
+      "01",
+      "02",
+      "03",
+      "04"
+     ],
+     "microLabels": 11,
+     "microLabelShare": 0.509,
+     "microSamples": [
+      "YACIMIENTO N.º 025",
+      "TURNO 07 · FASE DE ACCIONES",
+      "JUGADOR 1 · TÚ",
+      "BOT 1",
+      "BOT 2",
+      "YESO"
+     ],
+     "upperShare": 0.78,
+     "centerShare": 0.06,
+     "smallText": 5
+    },
+    "eyebrows": [],
+    "numbered": [
+     {
+      "text": "09",
+      "size": 19,
+      "top": 130
+     },
+     {
+      "text": "01",
+      "size": 6.5,
+      "top": 168
+     },
+     {
+      "text": "02",
+      "size": 6.5,
+      "top": 168
+     },
+     {
+      "text": "03",
+      "size": 6.5,
+      "top": 168
+     },
+     {
+      "text": "04",
+      "size": 6.5,
+      "top": 169
+     },
+     {
+      "text": "05",
+      "size": 6.5,
+      "top": 168
+     },
+     {
+      "text": "06",
+      "size": 6.5,
+      "top": 241
+     },
+     {
+      "text": "07",
+      "size": 6.5,
+      "top": 241
+     },
+     {
+      "text": "09",
+      "size": 6.5,
+      "top": 241
+     }
+    ],
+    "color": {
+     "bodyBg": "#eae7e1",
+     "bodyBgHsl": {
+      "h": 40,
+      "s": 0.18,
+      "l": 0.9
+     },
+     "dark": false,
+     "sectionBgs": [],
+     "textColors": [
+      {
+       "color": "#17181a",
+       "share": 0.71
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.29
+      }
+     ],
+     "button": {
+      "bg": "#3e7c8f",
+      "hsl": {
+       "h": 194,
+       "s": 0.4,
+       "l": 0.4
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 1,
+     "inHero": 1,
+     "radius": 0,
+     "height": 46,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "PASAR AL MERCADO"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 1,
+     "hairlineSamples": [
+      "nav.indice 358px"
+     ],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 76,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "archivo"
+    ]
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "mono",
+   "width": 1440,
+   "message": "Monospace type outside code: ui-monospace — e.g. \"YACIMIENTO N.º 025\", \"TURNO 07 · FASE DE ACCIONES\", \"01\", \"02\"",
+   "fix": "Set it in the text face. Monospace is for literal code inside <pre>/<code> only."
+  },
+  {
+   "level": "FAIL",
+   "id": "numbering",
+   "width": 1440,
+   "message": "Decorative index numbers: \"09\", \"01\", \"02\", \"03\", \"04\", \"05\"",
+   "fix": "Remove them. If order truly matters, write it into the words (\"First, …\") or use a real <ol>."
+  },
+  {
+   "level": "FAIL",
+   "id": "micro-label",
+   "width": 1440,
+   "message": "11 tiny uppercase letter-spaced labels (e.g. \"YACIMIENTO N.º 025\", \"TURNO 07 · FASE DE ACCIONES\", \"JUGADOR 1 · TÚ\", \"BOT 1\").",
+   "fix": "Use sentence-case text at a readable size, or delete the label."
+  },
+  {
+   "level": "WARN",
+   "id": "hairline",
+   "width": 1440,
+   "message": "1 thin rule(s)/divider line(s): nav.indice 358px",
+   "fix": "Delete. Separate with space, a tone change, or scale. Lines are only for real tables and form fields."
+  },
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 1440,
+   "message": "Yellow-cream background (page background #eae7e1).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream."
+  },
+  {
+   "level": "FAIL",
+   "id": "few-pictures",
+   "width": 1440,
+   "message": "Only 0 picture(s) on the page (0 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.",
+   "fix": "Find real pictures of the subject's world with scripts/assets.mjs (photographs, archival images, maps, engravings, footage), download them to assets/ and give them room: a hero picture, one per section that has a subject, a full-width band. At least four, usually six to twelve."
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "FAIL",
+   "id": "small-text",
+   "width": 1440,
+   "message": "5 text blocks under 13px.",
+   "fix": "Nothing meant to be read goes below 13px."
+  },
+  {
+   "level": "FAIL",
+   "id": "focal-point",
+   "width": 1440,
+   "message": "The first screen has no dominant element: the largest type is 46px (3.2vw) and no single picture holds a third of the viewport.",
+   "fix": "Make one thing lead: the headline at display size, or one large picture. A grid of many small pictures is not one thing; in blind tests jurors marked a first screen without a headline down every time. On the strongest studied sites the largest type has a median of 8.4vw."
+  },
+  {
+   "level": "FAIL",
+   "id": "still-page",
+   "width": 1440,
+   "message": "Only 0 element(s) moved while the page loaded and scrolled.",
+   "fix": "Build the motion layer (SKILL.md step 9, references/motion.md): the signature move, an entrance for the parts of every section, feedback on every control, and one moving picture. Transform and opacity only, with a reduced-motion fallback."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\mock-modular\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\mock-modular\\desktop-page-01.jpg"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,820 @@
+{
+ "url": "http://127.0.0.1:8123/",
+ "at": "2026-10-19T13:04:52.076Z",
+ "allow": [
+  "shadow",
+  "button-fx",
+  "few-pictures"
+ ],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    1
+   ],
+   "motion": {
+    "elements": 8,
+    "css": 2,
+    "transitions": 0,
+    "scripted": 6,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 900,
+     "screens": 1,
+     "words": 109,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 4,
+     "sections": 0,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": []
+    },
+    "hero": {
+     "text": "Fossilis",
+     "words": 1,
+     "chars": 8,
+     "lines": 1,
+     "size": 100,
+     "vw": 6.9,
+     "font": "Archivo",
+     "weight": 800,
+     "tracking": 0,
+     "leading": 0.92,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "left",
+     "widthRatio": 0.35,
+     "top": 352,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Fossilis",
+     "words": 1,
+     "lines": 1,
+     "size": 100,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "Fossilis",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 100,
+      "vw": 6.9,
+      "font": "Archivo",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 0.92,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.35,
+      "top": 352,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Archivo",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      15,
+      16,
+      100
+     ],
+     "sizeCount": 3,
+     "notLoaded": [],
+     "body": {
+      "font": "Archivo",
+      "size": 16,
+      "leading": 1.63,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 14.4
+     },
+     "measureChars": 73,
+     "max": {
+      "size": 100,
+      "vw": 6.9,
+      "font": "Archivo",
+      "text": "Fossilis"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.5,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#0d0f10",
+     "bodyBgHsl": {
+      "h": 200,
+      "s": 0.1,
+      "l": 0.06
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#eae7e1",
+       "top": 0,
+       "hsl": {
+        "h": 40,
+        "s": 0.18,
+        "l": 0.9
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#171819",
+       "share": 0.46
+      },
+      {
+       "color": "#16181a",
+       "share": 0.31
+      },
+      {
+       "color": "#17181a",
+       "share": 0.2
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#3e7c8f",
+      "hsl": {
+       "h": 194,
+       "s": 0.4,
+       "l": 0.4
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 1,
+     "inHero": 1,
+     "radius": 3,
+     "height": 48,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Abrir el yacimiento"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 9,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "div.carta-fisica.rounded-2xl → rgba(23, 24, 26, 0.14) 4px 4px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px"
+     ],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": null,
+    "fontsLoaded": [
+     "archivo"
+    ]
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    1
+   ],
+   "motion": {
+    "elements": 8,
+    "css": 2,
+    "transitions": 0,
+    "scripted": 6,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1024,
+     "screens": 1,
+     "words": 109,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 4,
+     "sections": 0,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": []
+    },
+    "hero": {
+     "text": "Fossilis",
+     "words": 1,
+     "chars": 8,
+     "lines": 1,
+     "size": 54,
+     "vw": 7,
+     "font": "Archivo",
+     "weight": 800,
+     "tracking": 0,
+     "leading": 0.92,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.96,
+     "top": 177,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Fossilis",
+     "words": 1,
+     "lines": 1,
+     "size": 54,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "Fossilis",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 54,
+      "vw": 7,
+      "font": "Archivo",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 0.92,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.96,
+      "top": 177,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Archivo",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      15,
+      16,
+      54
+     ],
+     "sizeCount": 3,
+     "notLoaded": [],
+     "body": {
+      "font": "Archivo",
+      "size": 16,
+      "leading": 1.63,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 14.4
+     },
+     "measureChars": 73,
+     "max": {
+      "size": 54,
+      "vw": 7,
+      "font": "Archivo",
+      "text": "Fossilis"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.5,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#0d0f10",
+     "bodyBgHsl": {
+      "h": 200,
+      "s": 0.1,
+      "l": 0.06
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#eae7e1",
+       "top": 0,
+       "hsl": {
+        "h": 40,
+        "s": 0.18,
+        "l": 0.9
+       }
+      },
+      {
+       "color": "#ffffff",
+       "top": 367,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#171819",
+       "share": 0.46
+      },
+      {
+       "color": "#16181a",
+       "share": 0.31
+      },
+      {
+       "color": "#17181a",
+       "share": 0.2
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#3e7c8f",
+      "hsl": {
+       "h": 194,
+       "s": 0.4,
+       "l": 0.4
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 1,
+     "inHero": 1,
+     "radius": 3,
+     "height": 48,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Abrir el yacimiento"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 9,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "div.carta-fisica.rounded-2xl → rgba(23, 24, 26, 0.14) 4px 4px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px"
+     ],
+     "gradients": 0,
+     "scrims": 1,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": null,
+    "fontsLoaded": [
+     "archivo"
+    ]
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 2,
+   "filled": [
+    1,
+    1
+   ],
+   "motion": {
+    "elements": 8,
+    "css": 2,
+    "transitions": 0,
+    "scripted": 6,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 996,
+     "screens": 1.2,
+     "words": 109,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 4,
+     "sections": 0,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": []
+    },
+    "hero": {
+     "text": "Fossilis",
+     "words": 1,
+     "chars": 8,
+     "lines": 1,
+     "size": 44,
+     "vw": 11.3,
+     "font": "Archivo",
+     "weight": 800,
+     "tracking": 0,
+     "leading": 0.92,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.92,
+     "top": 116,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Fossilis",
+     "words": 1,
+     "lines": 1,
+     "size": 44,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "Fossilis",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 44,
+      "vw": 11.3,
+      "font": "Archivo",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 0.92,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 116,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Archivo",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      15,
+      16,
+      44
+     ],
+     "sizeCount": 3,
+     "notLoaded": [],
+     "body": {
+      "font": "Archivo",
+      "size": 16,
+      "leading": 1.63,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 14.4
+     },
+     "measureChars": 45,
+     "max": {
+      "size": 44,
+      "vw": 11.3,
+      "font": "Archivo",
+      "text": "Fossilis"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.5,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#0d0f10",
+     "bodyBgHsl": {
+      "h": 200,
+      "s": 0.1,
+      "l": 0.06
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#eae7e1",
+       "top": 0,
+       "hsl": {
+        "h": 40,
+        "s": 0.18,
+        "l": 0.9
+       }
+      },
+      {
+       "color": "#ffffff",
+       "top": 322,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#171819",
+       "share": 0.46
+      },
+      {
+       "color": "#16181a",
+       "share": 0.31
+      },
+      {
+       "color": "#17181a",
+       "share": 0.2
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#3e7c8f",
+      "hsl": {
+       "h": 194,
+       "s": 0.4,
+       "l": 0.4
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 1,
+     "inHero": 1,
+     "radius": 3,
+     "height": 48,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Abrir el yacimiento"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 9,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "div.carta-fisica.rounded-2xl → rgba(23, 24, 26, 0.14) 4px 4px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px",
+      "button.w-11.h-11 → rgba(23, 24, 26, 0.85) 3px 3px 0px 0px"
+     ],
+     "gradients": 0,
+     "scrims": 1,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": null,
+    "fontsLoaded": [
+     "archivo"
+    ]
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "WARN",
+   "id": "outlined-box",
+   "width": 1440,
+   "message": "1 box(es) drawn with a 1px outline.",
+   "fix": "Prefer a filled surface or no box.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 1440,
+   "message": "Yellow-cream background (section #eae7e1).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "WARN",
+   "id": "still-page",
+   "width": 1440,
+   "message": "Little motion: 8 element(s) moved while the page loaded and scrolled.",
+   "fix": "Give every section an entrance for its parts (not one fade of the whole block) and add one moving picture: a looping clip or a slow move on a photograph."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\taste-final\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\taste-final\\desktop-page-01.jpg"
+   ]
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\taste-final\\tablet-fold.jpg",
+   "pages": [
+    "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\taste-final\\tablet-page-01.jpg"
+   ]
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\taste-final\\mobile-fold.jpg",
+   "pages": [
+    "C:\\Users\\Mitxel\\Desktop\\Proyectos de desarrollo\\Fossilis\\docs\\evidencia\\taste-final\\mobile-page-01.jpg"
+   ]
+  }
+ ]
+}

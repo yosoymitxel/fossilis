@@ -1,0 +1,404 @@
+/* ============================================================================
+   Fossilis · El gabinete · arte fase 2
+   Un museo, cuatro salas. Cada pantalla declara la suya con data-sala:
+     vitrina  · la partida    · tablero bajo vidrio, lámpara y latón
+     modular  · el sistema    · piso claro, tinta y teja (carga, setup, pausa)
+     libreta  · las hojas     · papel pautado, grafito y rojo lápiz
+     seccion  · lámina final  · cal, carbón y sol (cierre de temporada)
+   Tokens en tripletes RGB: Tailwind los consume con rgb(var(--x) / <alpha>).
+   Las recetas de material llevan taste-skill-ignore adrede: son la pieza fisica del juego.
+   ========================================================================== */
+
+/* ---- Las cuatro salas ----------------------------------------------------- */
+
+:root,
+[data-sala="vitrina"]{
+  --fondo:13 15 16;          /* sala  */
+  --superficie:22 25 27;     /* panel */
+  --borde:42 47 50;
+  --tenue:157 165 164;
+  --tinta:244 239 228;       /* texto */
+  --acento:207 224 232;      /* luz   */
+  --sobre-acento:#14161A;
+  --sobre-borde:#F4EFE4;
+  --arena:201 174 131; --arcilla:176 119 92; --piedra:147 156 164;
+  --velo:rgba(9,11,12,.62);
+  --laton:169 127 60;
+  --pozo:9 11 12;
+}
+
+[data-sala="modular"]{
+  --fondo:234 231 225; --superficie:255 255 255; --borde:23 24 26;
+  --tenue:110 113 117; --tinta:23 24 26; --acento:62 124 143;
+  --sobre-acento:#FFFFFF;
+  --sobre-borde:#FFFFFF;
+  --arena:176 126 61; --arcilla:163 75 54; --piedra:110 122 128;
+  --velo:rgba(23,24,26,.38);
+}
+
+[data-sala="libreta"]{
+  --fondo:231 222 198; --superficie:239 232 212; --borde:42 42 39;
+  --tenue:112 107 95; --tinta:42 42 39; --acento:166 56 44;
+  --sobre-acento:#F2EBD8;
+  --sobre-borde:#EFE8D4;
+  --arena:138 116 64; --arcilla:154 89 67; --piedra:107 116 122;
+  --velo:rgba(42,42,39,.45);
+}
+
+[data-sala="seccion"]{
+  --fondo:241 237 227; --superficie:250 247 238; --borde:38 41 45;
+  --tenue:118 118 112; --tinta:38 41 45; --acento:228 176 84;
+  --sobre-acento:#26292D;
+  --sobre-borde:#FAF7EE;
+  --arena:184 134 42; --arcilla:180 87 63; --piedra:94 107 120;
+  --velo:rgba(38,41,45,.42);
+}
+
+/* ---- Base ----------------------------------------------------------------- */
+
+html{background:rgb(var(--fondo))}
+body{
+  font-family:Archivo,system-ui,sans-serif;
+  color:rgb(var(--tinta));
+  -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
+}
+*:focus-visible{outline:2px solid rgb(var(--acento));outline-offset:2px;border-radius:3px}
+button,[role="button"]{touch-action:manipulation}
+::selection{background:rgb(var(--acento) / .30)}
+
+/* El ambiente del museo: dos capas fijas que solo asoman donde la sala es
+   transparente, o sea, tras la vitrina. Las salas claras pintan su piso. */
+@keyframes deriva{from{transform:translateX(0)}to{transform:translateX(-240px)}}
+@keyframes deriva2{from{transform:translateX(0)}to{transform:translateX(220px)}}
+body::before,body::after{
+  content:"";position:fixed;top:0;left:0;z-index:-1;pointer-events:none;
+  width:calc(100vw + 320px);height:100svh;background-repeat:repeat;
+}
+body::before{
+  background-image:repeating-linear-gradient(98deg, /* taste-skill-ignore */
+    rgba(169,127,60,.10) 0 2px,transparent 2px 84px,
+    rgba(150,90,66,.07) 84px 86px,transparent 86px 158px,
+    rgba(147,156,164,.06) 158px 160px,transparent 160px 240px);
+  background-size:240px 100%;animation:deriva 110s linear infinite;
+}
+body::after{
+  background-image:radial-gradient(circle at 20% 30%,rgba(244,239,228,.09) 0 1.6px,transparent 1.8px), /* taste-skill-ignore */
+                   radial-gradient(circle at 70% 70%,rgba(244,239,228,.05) 0 1.2px,transparent 1.4px); /* taste-skill-ignore */
+  background-size:220px 190px;animation:deriva2 55s linear infinite;
+}
+
+/* ---- Piezas de sistema ---------------------------------------------------- */
+
+.sobre-acento{color:var(--sobre-acento)}
+.sobre-borde{color:var(--sobre-borde)}
+.mano{font-family:Kalam,cursive}
+.rotulo{text-transform:uppercase;letter-spacing:.16em}
+.disp{font-family:Archivo,system-ui,sans-serif}
+
+.scroll::-webkit-scrollbar{height:6px;width:6px}
+.scroll::-webkit-scrollbar-thumb{background:rgb(var(--borde));border-radius:3px}
+.scroll::-webkit-scrollbar-track{background:transparent}
+
+/* La carga viste la sala modular (index.html le pone data-sala="modular") */
+.carga{
+  position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;background:rgb(var(--fondo));color:rgb(var(--tenue));
+  font-size:13px;text-align:center;padding:16px;
+}
+.carga b{font-weight:800;font-size:34px;letter-spacing:.22em;color:rgb(var(--tinta))}
+.carga svg{fill:rgb(var(--acento));animation:late 2s ease-in-out infinite}
+
+/* ---- La vitrina · la partida ---------------------------------------------- */
+
+.escena{perspective:1600px;perspective-origin:50% 50%;padding-bottom:26px !important}
+.marco-yacimiento{
+  position:relative;padding:16px 16px 18px;
+  background:linear-gradient(180deg,#1E2326 0%,#14181A 55%,#0E1113 100%); /* taste-skill-ignore */
+  border:1px solid rgba(244,239,228,.12);border-radius:14px;
+  transform:rotateX(19deg);transform-origin:50% 100%;transform-style:preserve-3d;
+  transition:transform .5s ease;
+  box-shadow:0 5px 0 rgba(0,0,0,.45),0 26px 50px -18px rgba(0,0,0,.9), /* taste-skill-ignore */
+    inset 0 1px 0 rgba(207,224,232,.14),inset 0 -3px 0 rgba(0,0,0,.5);
+}
+.marco-yacimiento::before{  /* marco de latón + reflejo del vidrio */
+  content:"";position:absolute;inset:6px;border-radius:9px;pointer-events:none;
+  border:1px solid rgba(169,127,60,.38);
+  background:linear-gradient(115deg,rgba(207,224,232,.06),transparent 38%); /* taste-skill-ignore */
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.55),inset 0 4px 14px rgba(0,0,0,.45); /* taste-skill-ignore */
+}
+.marco-yacimiento::after{  /* sombra de contacto */
+  content:"";position:absolute;left:6%;right:6%;bottom:-10px;height:30px;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.78) 0%,transparent 72%); /* taste-skill-ignore */
+  filter:blur(6px);pointer-events:none;transform:translateZ(-4px);
+}
+.haz{  /* el haz de la lámpara sobre la vitrina */
+  position:absolute;top:10px;left:50%;width:62%;height:42%;pointer-events:none;z-index:3;
+  transform:translateX(-50%) translateZ(1px);
+  clip-path:polygon(46% 0,54% 0,74% 100%,26% 100%);
+  background:linear-gradient(180deg,rgba(207,224,232,.20),rgba(207,224,232,.05) 78%,rgba(207,224,232,0)); /* taste-skill-ignore */
+}
+
+.rejilla-3d{transform-style:preserve-3d;position:relative;z-index:1}
+.celda-3d{transform-style:preserve-3d}
+.capa{transform-style:preserve-3d;will-change:transform}
+.flechas-3d{transform:translateZ(60px);transform-style:preserve-3d;pointer-events:auto}
+.peon-capa{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;z-index:10;transform-style:preserve-3d;
+}
+.peon-3d{display:inline-block;transform:translateZ(32px);transform-style:preserve-3d}
+.peon-sombra{
+  position:absolute;left:50%;top:78%;width:22px;height:7px;border-radius:50%;
+  transform:translate(-50%,0);
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.78) 0%,rgba(0,0,0,.35) 45%,transparent 72%); /* taste-skill-ignore */
+  pointer-events:none;
+}
+.celda-3d .peon-3d span[data-peon] svg{width:clamp(22px,19%,40px);height:auto}
+.celda-3d .peon-sombra{width:clamp(17px,15%,34px)}
+
+.tile{
+  border-radius:6px;position:relative;overflow:hidden;backface-visibility:hidden;
+  transition:filter .18s ease,box-shadow .2s ease,transform .2s ease;
+}
+[data-sala="vitrina"] .tile::after{  /* charco de luz sobre cada loseta */
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(90% 70% at 30% 20%,rgba(244,239,228,.15),transparent 62%); /* taste-skill-ignore */
+}
+.pit{
+  border-radius:5px;
+  background:radial-gradient(ellipse at 50% 0%,#05090A 0%,#0A1011 65%,#0C1416 100%); /* taste-skill-ignore */
+  box-shadow: /* taste-skill-ignore */
+    inset 0 10px 16px rgba(0,0,0,.95),
+    inset 0 -2px 0 rgba(255,255,255,.05),
+    inset 0 0 0 1px rgba(0,0,0,.55),
+    0 1px 0 rgba(255,255,255,.03);
+  transition:box-shadow .25s ease;
+}
+.h1{
+  transform:translateZ(10px);
+  box-shadow:0 4px 0 rgba(0,0,0,.48),0 12px 18px -6px rgba(0,0,0,.75), /* taste-skill-ignore */
+    inset 0 1px 0 rgba(255,255,255,.30),inset 0 -2px 0 rgba(0,0,0,.28);
+}
+.h2{
+  transform:translateZ(24px);
+  box-shadow:0 6px 0 rgba(0,0,0,.42),0 18px 24px -6px rgba(0,0,0,.78), /* taste-skill-ignore */
+    inset 0 1px 0 rgba(255,255,255,.34),inset 0 -2px 0 rgba(0,0,0,.30);
+}
+.pickable{cursor:pointer}
+.pickable:hover{filter:brightness(1.14);transform:translateZ(18px)}
+.pickable:active{filter:brightness(1.22);transform:translateZ(6px)}
+.h2.pickable:hover{transform:translateZ(32px)}
+.h2.pickable:active{transform:translateZ(10px)}
+.glow{box-shadow:0 0 0 2px rgb(var(--acento)),0 5px 0 rgba(0,0,0,.5),0 14px 20px -6px rgba(0,0,0,.7)} /* taste-skill-ignore */
+.glow2{box-shadow:0 0 0 2px rgb(var(--acento)),0 8px 0 rgba(0,0,0,.5),0 22px 28px -8px rgba(0,0,0,.8)} /* taste-skill-ignore */
+.ficha{filter:drop-shadow(0 3px 2px rgba(0,0,0,.85)) drop-shadow(0 1px 1px rgba(0,0,0,.65))} /* taste-skill-ignore */
+
+/* ---- Superficies compartidas ---------------------------------------------- */
+
+.carta-fisica{
+  background:linear-gradient(165deg,#1B2024 0%,#161A1D 45%,#121518 100%); /* taste-skill-ignore */
+  box-shadow:0 5px 0 -1px rgba(0,0,0,.45),0 16px 26px -10px rgba(0,0,0,.8), /* taste-skill-ignore */
+    inset 0 1px 0 rgba(207,224,232,.06),inset 0 -1px 0 rgba(0,0,0,.4);
+}
+.btn-fisico{
+  box-shadow:0 3px 0 rgba(0,0,0,.45),0 8px 14px -6px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.18); /* taste-skill-ignore */
+}
+.velo-fondo{background:var(--velo)}
+.hoja-cerrar{
+  width:44px;height:44px;border-radius:9999px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;line-height:1;flex-shrink:0;border:1.5px solid rgb(var(--borde));color:rgb(var(--tinta));
+  background:transparent;transition:background-color .15s ease,transform .15s ease;
+}
+.hoja-cerrar:hover{background:rgb(var(--borde) / .12)}
+.hoja-cerrar:active{transform:scale(.95)}
+.sello-punto{
+  width:11px;height:11px;border-radius:9999px;flex-shrink:0;display:inline-block;
+  box-shadow:0 0 0 1.5px rgb(var(--tinta) / .45); /* taste-skill-ignore */
+}
+
+/* ---- Movimiento (respaldos CSS: solo cuando MOT() devuelve null) ----------- */
+
+@keyframes sube{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fundido{from{opacity:0}to{opacity:1}}
+@keyframes surge{from{opacity:0;transform:translateY(8px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes flota{0%{opacity:0;transform:translateY(6px)}18%{opacity:1;transform:none}82%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+@keyframes late{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes pulso{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+@keyframes banda{0%{transform:translateY(-100%);opacity:0}12%{transform:none;opacity:1}88%{transform:none;opacity:1}100%{transform:translateY(-100%);opacity:0}}
+@keyframes destello{0%{box-shadow:0 0 0 0 rgb(var(--acento) / .9)}100%{box-shadow:0 0 0 14px rgb(var(--acento) / 0)}} /* taste-skill-ignore */
+.hoja{animation:sube .26s cubic-bezier(.2,.9,.3,1)}
+.velo{animation:fundido .2s ease-out}
+.brota{animation:surge .22s ease-out}
+.flota{animation:flota 2.4s ease-out forwards}
+.late{animation:late 2s ease-in-out infinite}
+.pulso{animation:pulso 1.6s ease-in-out 3}
+.banda{animation:banda 1.7s cubic-bezier(.2,.9,.3,1) forwards}
+.fxPit{animation:destello .6s ease-out}
+
+/* ---- La libreta · las hojas ------------------------------------------------ */
+
+[data-sala="libreta"] .carta-fisica.cuaderno{
+  background:rgb(var(--fondo));
+  background-image:repeating-linear-gradient(to bottom,transparent 0 25px,rgb(201 191 164 / .38) 25px 26px); /* taste-skill-ignore */
+  color:rgb(var(--tinta));
+}
+[data-sala="libreta"] .carta-fisica{
+  background:rgb(var(--superficie));
+  border:1.5px solid rgb(42 42 39 / .5);border-radius:4px;
+  box-shadow:0 1px 0 rgb(42 42 39 / .18),0 3px 10px -6px rgb(42 42 39 / .35); /* taste-skill-ignore */
+}
+[data-sala="libreta"] .btn-fisico{box-shadow:2px 2px 0 rgb(42 42 39 / .8);border-radius:3px} /* taste-skill-ignore */
+[data-sala="libreta"] .tile{border-radius:4px}
+[data-sala="libreta"] .tile.h1{
+  transform:none;box-shadow:inset 0 0 0 1.5px rgb(42 42 39 / .5),0 2px 0 rgb(42 42 39 / .22); /* taste-skill-ignore */
+}
+[data-sala="libreta"] .pit{  /* el pozo se dibuja a lápiz */
+  background:repeating-linear-gradient(45deg,transparent 0 6px,rgb(42 42 39 / .28) 6px 7px); /* taste-skill-ignore */
+  box-shadow:inset 0 0 0 1.5px rgb(42 42 39 / .45); /* taste-skill-ignore */
+}
+[data-sala="libreta"] .pickable:hover{filter:none;transform:translateY(-1px)}
+[data-sala="libreta"] .pickable:active{filter:none;transform:translateY(0)}
+[data-sala="libreta"] .h2.pickable:hover{transform:translateY(-1px)}
+[data-sala="libreta"] .h2.pickable:active{transform:translateY(0)}
+[data-sala="libreta"] .glow{box-shadow:0 0 0 2px rgb(var(--acento)),2px 2px 0 rgb(42 42 39 / .35)} /* taste-skill-ignore */
+[data-sala="libreta"] .glow2{box-shadow:0 0 0 2px rgb(var(--acento)),3px 3px 0 rgb(42 42 39 / .4)} /* taste-skill-ignore */
+[data-sala="libreta"] .retrato{  /* la foto del retrato, pegada con cinta */
+  position:relative;border:1.5px solid rgb(42 42 39 / .55);background:rgb(42 42 39 / .05);
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:10px 8px;
+}
+[data-sala="libreta"] .retrato::before,
+[data-sala="libreta"] .retrato::after{
+  content:"";position:absolute;width:46px;height:13px;background:rgb(233 226 205 / .85);
+  box-shadow:inset 0 0 0 1px rgb(42 42 39 / .12),0 1px 2px rgb(42 42 39 / .18); /* taste-skill-ignore */
+}
+[data-sala="libreta"] .retrato::before{top:-7px;left:14%;transform:rotate(-4deg)}
+[data-sala="libreta"] .retrato::after{bottom:-7px;right:12%;transform:rotate(3deg)}
+
+/* ---- Modular · el sistema (carga, setup, pausa) ---------------------------- */
+
+[data-sala="modular"] .btn-fisico{box-shadow:3px 3px 0 rgb(23 24 26 / .85);border-radius:3px} /* taste-skill-ignore */
+[data-sala="modular"] .carta-fisica{
+  background:rgb(var(--superficie));border:1.5px solid rgb(var(--borde));border-radius:4px;
+  box-shadow:4px 4px 0 rgb(23 24 26 / .14); /* taste-skill-ignore */
+}
+[data-sala="modular"] .hoja-cerrar{border-radius:3px}
+[data-sala="modular"] .tile{border-radius:3px}
+[data-sala="modular"] .pit{background:transparent;box-shadow:inset 0 0 0 1.5px rgb(var(--borde))} /* taste-skill-ignore */
+[data-sala="modular"] .glow,[data-sala="modular"] .glow2{
+  box-shadow:0 0 0 2px rgb(var(--acento)),3px 3px 0 rgb(23 24 26 / .5); /* taste-skill-ignore */
+}
+
+/* ---- Sección de luz · lámina final ----------------------------------------- */
+
+[data-sala="seccion"] .disp{
+  font-family:"Barlow Condensed",system-ui,sans-serif;font-style:italic;font-weight:600;
+}
+[data-sala="seccion"] .carta-fisica{
+  background:transparent;border:1.5px solid rgb(var(--borde));border-radius:0;box-shadow:none;
+}
+[data-sala="seccion"] .carta-fisica.cuaderno{background:rgb(var(--superficie))}
+[data-sala="seccion"] .btn-fisico{box-shadow:2px 2px 0 rgb(38 41 45 / .55);border-radius:2px} /* taste-skill-ignore */
+[data-sala="seccion"] .tile{border-radius:2px}
+[data-sala="seccion"] .pit{
+  background:repeating-linear-gradient(45deg,transparent 0 6px,rgb(38 41 45 / .32) 6px 7px); /* taste-skill-ignore */
+  box-shadow:inset 0 0 0 1px rgb(38 41 45 / .5); /* taste-skill-ignore */
+}
+
+/* ---- Temas aplicados a la partida -----------------------------------------
+   En Gabinete la partida vive en la vitrina. Al elegir otro tema, el mismo
+   tablero se materializa en esa sala: sin vidrio, sin lámpara y con el canto
+   duro de sus piezas. La altura sigue leyéndose en la sombra de cada loseta. */
+
+html[data-sala="modular"] body::before,
+html[data-sala="modular"] body::after,
+html[data-sala="libreta"] body::before,
+html[data-sala="libreta"] body::after,
+html[data-sala="seccion"] body::before,
+html[data-sala="seccion"] body::after{display:none}
+
+[data-sala="modular"] .escena,
+[data-sala="libreta"] .escena,
+[data-sala="seccion"] .escena{perspective:none}
+[data-sala="modular"] .marco-yacimiento,
+[data-sala="libreta"] .marco-yacimiento,
+[data-sala="seccion"] .marco-yacimiento{transform:none}
+[data-sala="modular"] .haz,
+[data-sala="libreta"] .haz,
+[data-sala="seccion"] .haz{display:none}
+[data-sala="modular"] .marco-yacimiento::before,
+[data-sala="modular"] .marco-yacimiento::after,
+[data-sala="libreta"] .marco-yacimiento::before,
+[data-sala="libreta"] .marco-yacimiento::after,
+[data-sala="seccion"] .marco-yacimiento::before,
+[data-sala="seccion"] .marco-yacimiento::after{display:none}
+
+[data-sala="modular"] .marco-yacimiento{
+  background:rgb(var(--superficie));
+  border:2px solid rgb(var(--borde));border-radius:0;
+  box-shadow:6px 6px 0 rgb(23 24 26 / .14); /* taste-skill-ignore */
+}
+[data-sala="modular"] .tile.h1{
+  transform:none;box-shadow:0 3px 0 rgb(23 24 26 / .5); /* taste-skill-ignore */
+}
+[data-sala="modular"] .tile.h2{
+  transform:none;box-shadow:0 6px 0 rgb(23 24 26 / .5); /* taste-skill-ignore */
+}
+
+[data-sala="libreta"] .marco-yacimiento{
+  background:rgb(var(--superficie));
+  border:1.5px solid rgb(var(--borde));border-radius:4px;
+  box-shadow:4px 4px 0 rgb(42 42 39 / .24); /* taste-skill-ignore */
+}
+[data-sala="libreta"] .tile.h2{
+  transform:none;box-shadow:inset 0 0 0 1.5px rgb(42 42 39 / .55),0 4px 0 rgb(42 42 39 / .24); /* taste-skill-ignore */
+}
+
+[data-sala="seccion"] .marco-yacimiento{
+  background:rgb(var(--superficie));
+  border:1.5px solid rgb(var(--borde));border-radius:0;
+  box-shadow:none;
+}
+[data-sala="seccion"] .tile.h1{
+  transform:none;box-shadow:inset 0 0 0 1px rgb(38 41 45 / .4); /* taste-skill-ignore */
+}
+[data-sala="seccion"] .tile.h2{
+  transform:none;box-shadow:inset 0 0 0 1px rgb(38 41 45 / .6),0 3px 0 rgb(38 41 45 / .22); /* taste-skill-ignore */
+}
+[data-sala="seccion"] .glow,
+[data-sala="seccion"] .glow2{
+  box-shadow:0 0 0 2px rgb(var(--acento)),2px 2px 0 rgb(38 41 45 / .35); /* taste-skill-ignore */
+}
+
+/* ---- Media ----------------------------------------------------------------- */
+
+@media (max-width:1024px){
+  .marco-yacimiento{transform:rotateX(13deg);padding:13px 13px 15px;border-radius:12px}
+}
+@media (max-width:640px){
+  .escena{perspective:1100px;padding-bottom:20px !important}
+  .marco-yacimiento{transform:rotateX(9deg);padding:11px 11px 13px;border-radius:10px}
+  .h1{transform:translateZ(8px)}
+  .h2{transform:translateZ(18px)}
+  .peon-3d{transform:translateZ(24px)}
+}
+
+/* ---- Corte de movimiento --------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce){
+  .tile{transition:none}
+  .fxPit,.hoja,.velo,.brota,.flota,.late,.banda,.pulso,.carga svg{animation:none}
+  body::before,body::after{animation:none}
+  .escena{perspective:none}
+  .marco-yacimiento{transform:none}
+  .h1,.h2,.peon-3d{transform:none}
+  .pickable:hover,.pickable:active,.h2.pickable:hover,.h2.pickable:active{transform:none}
+  .flechas-3d{transform:none}
+}
+/* El interruptor de ajustes apaga también los respaldos CSS. */
+html[data-anim="off"] .fxPit,html[data-anim="off"] .hoja,html[data-anim="off"] .velo,
+html[data-anim="off"] .brota,html[data-anim="off"] .flota,html[data-anim="off"] .late,
+html[data-anim="off"] .banda,html[data-anim="off"] .pulso,
+html[data-anim="off"] .carga svg{animation:none}
+html[data-anim="off"] body::before,html[data-anim="off"] body::after{animation:none}
+html[data-anim="off"] .tile{transition:none}
