@@ -93,7 +93,7 @@ en `docs/evidencia/` (menú y partida a tres anchos).
 
 ## Temas seleccionables (19 oct 2026)
 
-El reparto fijo de las cuatro salas pasa a ser el tema **Gabinete** por defecto; **Vitrina**,
+El tema **Gabinete** por defecto es la sala oscura de la vitrina en toda la app;
 **Modular**, **Libreta** y **Sección** visten toda la app con una sola sala. El estado del tema
 vive en `app.jsx` y se comparte por `TemaCtx`; cada pantalla resuelve su sala con `salaDe(base,
 tema)` y `html[data-sala]` sincroniza los tokens. El selector `Temas` está en el menú y en la

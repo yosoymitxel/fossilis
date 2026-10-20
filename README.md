@@ -17,9 +17,8 @@ O doble clic en `servir.cmd`. Abrir `http://localhost:8123/`.
 ## Temas
 
 El tema se elige en el menú (`Tema · Elegir`) y en la pausa. **Gabinete** es el
-reparto original de cuatro salas; **Modular** es el tema claro; **Vitrina**,
-**Libreta** y **Sección** visten toda la app con una sola sala. El tema no se
-guarda entre recargas.
+tema oscuro por defecto; **Modular**, **Libreta** y **Sección** visten toda la app
+con una sola sala. El tema no se guarda entre recargas.
 
 ## Documentación
 

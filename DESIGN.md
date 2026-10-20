@@ -1,20 +1,19 @@
 # DESIGN.md · Fossilis
 
 Adaptación web del juego de mesa de paleontología. El sistema visual se llama
-**el gabinete**: un museo con cuatro salas. Este documento fija el mundo para que
+**el gabinete**: un museo a oscuras. Este documento fija el mundo para que
 cualquier cambio futuro lo respete. La fuente de verdad de los tokens es
 `estilos/gabinete.css`.
 
 ## El gabinete
 
-Cada pantalla declara su sala con `data-sala` y hereda su paleta. La partida vive
-bajo la vitrina: losetas de excavación con relieve, marco de latón, vidrio y la
-lámpara cayendo desde arriba. Las hojas de consulta son papel pautado; el menú, el
-sistema imprimido; el cierre de temporada, una lámina de sección.
+Toda la app vive en la vitrina: losetas de excavación con relieve, marco de latón,
+vidrio y la lámpara cayendo desde arriba. El menú, la pausa, las hojas y el cierre
+comparten la misma sala oscura; no hay reparto de salas.
 
-Ese reparto es el tema **Gabinete**, el de por defecto. La app también puede vestirse
-entera con una sola sala: **Vitrina**, **Modular**, **Libreta** o **Sección**. El tema
-se elige en el menú y en la pausa; Modular es la referencia clara.
+Ese tema es **Gabinete**, el de por defecto. La app también puede vestirse entera
+con otra sala: **Modular**, **Libreta** o **Sección**. El tema se elige en el menú y
+en la pausa; Modular es la referencia clara.
 
 Todo lo que se pulsa *se puede tocar*: las piezas llevan borde bajo, sombra de
 contacto dura y se hunden al presionar. La interfaz no imita una app: imita objetos
@@ -23,17 +22,16 @@ sobre una mesa de museo.
 Referencias: diorama de excavación (arena, arcilla, yeso, hueso) + señalética de
 museo de historia natural + libreta de campo.
 
-## Las cuatro salas (tokens en `estilos/gabinete.css`)
+## Las salas (tokens en `estilos/gabinete.css`)
 
-- **vitrina · la partida** (juego): piso `#0D0F10`, tinta `#F4EFE4`, luz
+- **vitrina · toda la app** (por defecto): piso `#0D0F10`, tinta `#F4EFE4`, luz
   `#CFE0E8`, latón `#A97F3C`, pozo `#090B0C`; materia del yacimiento re-tonada
   (arena 201 174 131 · arcilla 176 119 92 · piedra 147 156 164).
-- **modular · el sistema** (carga, menú, pausa): piso `#EAE7E1`, superficie
-  blanca, tinta y borde `#17181A`, teja `#3E7C8F`, roja `#C24B3A`.
-- **libreta · las hojas** (dinos, mercado, equipo, marcador): papel `#E7DEC6`,
-  superficie `#EFE8D4`, grafito `#2A2A27`, rojo lápiz `#A6382C`.
-- **seccion · el cierre** (final): cal `#F1EDE3`, carbón `#26292D`, sol `#E4B054`,
-  sombra `#7A8CA8`.
+- **modular · el sistema claro**: piso `#EAE7E1`, superficie blanca, tinta y borde
+  `#17181A`, teja `#3E7C8F`, roja `#C24B3A`.
+- **libreta · papel pautado**: papel `#E7DEC6`, superficie `#EFE8D4`, grafito
+  `#2A2A27`, rojo lápiz `#A6382C`.
+- **seccion · cal**: cal `#F1EDE3`, carbón `#26292D`, sol `#E4B054`, sombra `#7A8CA8`.
 
 Regla: la materia del yacimiento existe en todas las salas, re-tonada a su luz.
 Tailwind consume los tripletes con `rgb(var(--x) / <alpha>)`; `--sobre-acento` es la
@@ -49,8 +47,7 @@ limpio y no como una mezcla.
 
 ## Temas seleccionables
 
-- **Gabinete** (por defecto): conserva el reparto de las cuatro salas.
-- **Vitrina**: toda la app en la sala a oscuras.
+- **Gabinete** (por defecto): la app entera en la sala oscura de la vitrina.
 - **Modular**: toda la app en piso claro; referencia clara.
 - **Libreta**: toda la app en papel pautado.
 - **Sección**: toda la app en cal.
@@ -61,8 +58,8 @@ vista). Cada ficha es un botón de 44px con `aria-pressed`, muestra de color y
 `data-tema`; la nota explica el tema activo.
 
 El estado vive en `App` (`TemaCtx`, `useTema`) y cada pantalla resuelve su sala con
-`salaDe(base, tema)`: en Gabinete devuelve el reparto de siempre; en un tema fijo
-devuelve esa sala. `App` sincroniza `html[data-sala]`, de modo que fondo, tinta,
+`salaDe(base, tema)`: en Gabinete devuelve la vitrina para toda la app; en un tema
+fijo devuelve esa sala. `App` sincroniza `html[data-sala]`, de modo que fondo, tinta,
 foco, textura y acento cambian a la vez. No hay persistencia entre recargas, como el
 resto de ajustes de prototipo; el tema se mantiene al reiniciar la partida porque vive
 por encima de `Setup` y `Game`.
@@ -162,7 +159,8 @@ y el inspector corre con `--allow shadow,button-fx,few-pictures`:
 - La semilla y las selecciones usan `bg-sedimento` (la clase `bg-superficie` no
   existía en el tema Tailwind); en Libreta, Sección y Vitrina ya no quedan campos
   blancos.
-- El tema por defecto es Gabinete; para la app clara hay que elegir Modular.
+- El tema por defecto es Gabinete, ahora oscuro en toda la app; para la app clara hay
+  que elegir Modular.
 
 ## Registro de decisiones
 
@@ -189,3 +187,9 @@ Fase 3:
 - Temas seleccionables (19 oct 2026): Gabinete por defecto (cuatro salas) y cuatro
   temas de sala única; selector en menú y pausa; sin persistencia entre recargas; el
   tablero se re-materializa por CSS sin tocar la lógica.
+
+## Ajuste del tema por defecto (20 oct 2026)
+
+Gabinete dejó de ser el reparto de cuatro salas y pasó a ser una sola sala oscura
+(vitrina) en toda la app: arranque, partida, menú, pausa, hojas y cierre comparten
+el mismo mundo. El resto de temas (Modular, Libreta, Sección) no cambia.

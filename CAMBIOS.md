@@ -241,3 +241,11 @@ errores de aplicación. Verificación visual en `docs/evidencia/temas/` (menú, 
 Modular a 390 / 768 / 1440, Libreta, Sección, Vitrina y pausas). El tema por defecto
 sigue siendo **Gabinete** (la partida oscura de la vitrina); para la app clara hay
 que elegir **Modular**.
+
+## Ajuste del tema por defecto (20 oct 2026)
+
+Gabinete dejó de ser el reparto de cuatro salas y pasó a ser una sola sala oscura
+(vitrina) en toda la app: arranque, partida, menú, pausa, hojas y cierre comparten
+el mismo mundo. `salaDe` devuelve `vitrina` para `gabinete`, el arranque usa
+`data-sala="vitrina"` y la ficha de Gabinete muestra un solo color. El resto de
+temas (Modular, Libreta, Sección) no cambia.

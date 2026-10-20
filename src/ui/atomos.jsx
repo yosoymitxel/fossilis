@@ -58,14 +58,14 @@ const BtnJ = ({on, dis, children, cls=''}) => (
     className={'btn-fisico bg-cinta sobre-acento py-3 px-4 rounded-xl disp font-bold text-[14px] transition-[transform,color,background-color,border-color,opacity,filter,box-shadow] active:scale-[.98] disabled:opacity-30 inline-flex items-center justify-center gap-2 '+cls}>{children}</button>
 );
 const FICHAS_TEMA = [
-  {id:'gabinete', nombre:'Gabinete', fondo:'#0D0F10', luz:'#CFE0E8', cuatro:['#0D0F10','#EAE7E1','#E7DEC6','#F1EDE3']},
+  {id:'gabinete', nombre:'Gabinete', fondo:'#0D0F10', luz:'#CFE0E8'},
   {id:'vitrina', nombre:'Vitrina', fondo:'#0D0F10', luz:'#CFE0E8'},
   {id:'modular', nombre:'Modular', fondo:'#EAE7E1', luz:'#3E7C8F'},
   {id:'libreta', nombre:'Libreta', fondo:'#E7DEC6', luz:'#A6382C'},
   {id:'seccion', nombre:'Sección', fondo:'#F1EDE3', luz:'#E4B054'},
 ];
 const NOTA_TEMA = {
-  gabinete:'Cada pantalla en su sala: vitrina, sistema, libreta y sección.',
+  gabinete:'Toda la app en la sala a oscuras: luz de lámpara, vidrio y latón.',
   vitrina:'Toda la app en la sala a oscuras: luz de lámpara, vidrio y latón.',
   modular:'Toda la app en piso claro: bloques rectos y teja.',
   libreta:'Toda la app en papel pautado: grafito y rojo lápiz.',

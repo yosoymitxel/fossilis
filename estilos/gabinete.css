@@ -100,7 +100,7 @@ body::after{
 .scroll::-webkit-scrollbar-thumb{background:rgb(var(--borde));border-radius:3px}
 .scroll::-webkit-scrollbar-track{background:transparent}
 
-/* La carga viste la sala modular (index.html le pone data-sala="modular") */
+/* La carga viste la sala vitrina (index.html le pone data-sala="vitrina") */
 .carga{
   position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:12px;background:rgb(var(--fondo));color:rgb(var(--tenue));

@@ -28,11 +28,11 @@ const SUAVE = typeof window!=='undefined' && window.matchMedia
 const AJUSTES = {animacion: !SUAVE, sonido: true};
 const quieto = () => !AJUSTES.animacion;
 
-/* 'gabinete' conserva las cuatro salas; los otros temas visten toda la app. */
+/* 'gabinete' es la sala oscura en toda la app; los otros temas son salas únicas. */
 const TEMAS = ['gabinete','vitrina','modular','libreta','seccion'];
 const TemaCtx = React.createContext(['gabinete', () => {}]);
 const useTema = () => React.useContext(TemaCtx);
-const salaDe = (base, tema) => tema==='gabinete' ? base : tema;
+const salaDe = (base, tema) => tema==='gabinete' ? 'vitrina' : tema;
 // El interruptor de ajustes también apaga los respaldos CSS (ver gabinete.css).
 const syncAnim = () => {
   if(typeof document!=='undefined') document.documentElement.dataset.anim = AJUSTES.animacion ? 'on' : 'off';
