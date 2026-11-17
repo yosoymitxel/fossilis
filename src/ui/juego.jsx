@@ -2,9 +2,9 @@ const {useState, useMemo, useRef, useEffect, useLayoutEffect} = React;
 const {MAT, BONE} = FG.data;
 const {cur, has, digCost, digTargets, extractTargets, moveTargets, sandTargets, climbTargets, planDig, pasoHacia, marketCap, startEnergy, act, aiStep, totalBones, solvePayment, DIRS, reach} = FG.core;
 const {ERA_COL, eraDe} = FG.ui;
-const {Peon, Cell, Hoja, Btn, BtnJ, Banda, TEX, Ico, Ic, IcoDino, Yeso, Rayo, ICONO} = FG.ui;
+const {Peon, Cell, Hoja, Btn, BtnJ, Banda, TEX, Ico, Ic, IcoDino, Yeso, Rayo, ICONO, Rodante, svgIcono} = FG.ui;
 const {Hojas, Pausa, Momento} = FG.ui;
-const {son, chispasEn, flotanteEn, Sacudida, Destello, Chispas, PERFIL, PALETA, MAT_PAL, GESTO, SUAVE, quieto, useTema, salaDe, AJUSTES, RITMO} = FG.fx;
+const {son, chispasEn, flotanteEn, Sacudida, Destello, Chispas, PERFIL, PALETA, MAT_PAL, GESTO, SUAVE, quieto, useTema, salaDe, AJUSTES, RITMO, vuela, golpe} = FG.fx;
 const PISTAS = [
   {k:'inicio',  cond:g=>true,
    t:'Cavar empuja una loseta y todo lo que tenga detrás. Gastas energía arriba a la derecha.'},
@@ -19,6 +19,48 @@ const PISTAS = [
   {k:'fuera',   cond:(g,p)=>g.players.some(q=>q.pos===null),
    t:'Quien cae a una fosa o fuera del borde queda apartado y gasta 1 de energía en volver.'},
 ];
+
+function Accion({k, t, on, dis, cost, active}){
+  const ico = useRef(null);
+  const gesto = () => {
+    if(!ico.current || !ico.current.animate || dis || SUAVE) return;
+    ico.current.animate((GESTO[k] || GESTO.pausa).map(tr=>({transform:tr})),
+      {duration:520, easing:'cubic-bezier(.3,.9,.3,1)'});
+  };
+  const pulsar = e => {
+    gesto();
+    chispasEn(e.currentTarget, k, (k==='mover'||k==='subir') ? {col:['#CFE0E8','#F4EFE4']} : null);
+    if(k==='yeso'){
+      flotanteEn(e.currentTarget, '+1 yeso', PALETA.yeso[2]);
+      vuela(e.currentTarget, document.querySelector('[data-hud="yeso"]'), d=>{ d.innerHTML = svgIcono('ui-yeso', 26, PALETA.yeso[1]); }, {lado:30, fin:.6});
+    }
+    on();
+  };
+  return (
+    <button onClick={pulsar} onMouseEnter={gesto} onFocus={gesto} disabled={dis}
+      className="btn-fisico flex flex-col items-center justify-center gap-0.5 py-2 lg:py-2.5 rounded-xl text-[11px] lg:text-[12px] font-medium leading-tight transition-[transform,color,background-color,border-color,opacity,filter,box-shadow] active:scale-95 disabled:opacity-25 disabled:active:scale-100 bg-sedimento border hover:brightness-110 min-h-[62px] lg:min-h-[68px]"
+      style={active ? {background:'rgb(var(--acento) / .16)', borderColor:'rgb(var(--acento) / .55)', color:'rgb(var(--tinta))'} : {borderColor:'rgb(var(--borde))'}}>
+      <span ref={ico} className="block">{k==='yeso' ? <Yeso s={18}/> : <Ico k={k} s={18}/>}</span>
+      <span className="leading-none">{t}</span>
+      <span className={'leading-none text-[10px] inline-flex items-center '+(active?'opacity-75':'text-tenue')}>{cost===0?'gratis':<>{cost}<Rayo s={9}/></>}</span>
+    </button>
+  );
+}
+
+function TabBtn({id, label, badge, icon, full, abrir}){
+  const iconEl = icon
+    ? (ICONO[icon] ? <Ic k={icon} s={16}/> : <Ico k={icon} s={16}/>)
+    : null;
+  return (
+    <button onClick={()=>abrir(id)} aria-label={label} title={label}
+      className={'relative flex flex-col items-center justify-center gap-1 py-1.5 min-h-[44px] px-1.5 text-[11px] text-tenue hover:text-hueso transition-colors rounded-lg hover:bg-borde/30 '+(full?'flex-1':'w-full')}>
+      {iconEl}
+      <span className="truncate leading-none">{label}</span>
+      {badge>0 && <span className="absolute top-0.5 right-0.5 min-w-[15px] h-[15px] px-1 rounded-full text-[9px] font-bold leading-[15px] bg-cinta sobre-acento">{badge}</span>}
+    </button>
+  );
+}
+
 
 function Game({g, setG, onRestart}){
   const [tema] = useTema();
@@ -38,6 +80,7 @@ function Game({g, setG, onRestart}){
   const montado = useRef(false);
   const vuelo = useRef(new Map());
   const anchoTablero = useRef(null);
+  const paron = useRef(0);          // ms de parada antes de que el empuje arranque
   const [banda,setBanda] = useState(null);
   const [vistas,setVistas] = useState([]);
   // Escenas intermedias: se muestran de una en una y los bots esperan a que acaben.
@@ -74,9 +117,17 @@ function Game({g, setG, onRestart}){
         const dx = ant.x-s.x, dy = ant.y-s.y;
         if(Math.abs(dx)<1 && Math.abs(dy)<1) return;
         const previa = vuelo.current.get(k); if(previa) previa.cancel();
-        const a = el.animate(
-          [{transform:'translate('+dx+'px,'+dy+'px)'}, {transform:'translate(0,0)'}],
-          {duration:420, easing:'cubic-bezier(.22,1.15,.34,1)', composite:'add'});
+        const tr = (x,y,sx,sy) => 'translate('+x+'px,'+y+'px) scale('+sx+','+sy+')';
+        const salto = Math.min(22, 8 + Math.hypot(dx,dy)*.12);
+        const fotos = el.dataset.peon
+          ? [{transform:tr(dx,dy,1,1), easing:'cubic-bezier(.33,0,.67,1)'},
+             {transform:tr(dx/2,dy/2-salto,1.04,1.04), offset:.5, easing:'cubic-bezier(.33,0,.67,1)'},
+             {transform:tr(0,0,1.12,.86), offset:.86, easing:'cubic-bezier(.23,1,.32,1)'},
+             {transform:tr(0,0,1,1)}]
+          : [{transform:tr(dx,dy,1,1), easing:'cubic-bezier(.5,0,.2,1)'},
+             {transform:tr(0,0,1.07,.93), offset:.72, easing:'cubic-bezier(.23,1,.32,1)'},
+             {transform:tr(0,0,1,1)}];
+        const a = el.animate(fotos, {duration:el.dataset.peon ? 380 : 360, delay:paron.current, fill:'backwards', composite:'add'});
         vuelo.current.set(k,a);
         a.finished.then(()=>{ if(vuelo.current.get(k)===a) vuelo.current.delete(k); }, ()=>{});
       } else if(montado.current){
@@ -86,6 +137,7 @@ function Game({g, setG, onRestart}){
     });
     for(const k of [...cajas.current.keys()]) if(!vistos.has(k)){ cajas.current.delete(k); vuelo.current.delete(k); }
     montado.current = true;
+    paron.current = 0;
   });
 
   // Al cambiar el tamaño (pantalla completa, giro) se apuntan los sitios nuevos sin animar nada.
@@ -109,6 +161,11 @@ function Game({g, setG, onRestart}){
         Sacudida(tablero.current, c.mat==='stone' ? 7 : c.mat==='clay' ? 4 : 2);
         const el = tablero.current.querySelector('[data-cell="'+c.i+'"]');
         flotanteEn(el, '+ '+MAT[c.mat].es, PALETA[MAT_PAL[c.mat]][0]);
+        const paso = ({N:[0,-1],S:[0,1],E:[1,0],O:[-1,0]})[g.fx.dir] || [0,0], r = el && el.getBoundingClientRect();
+        if(r) vuela(el, document.querySelector('[data-hud="losetas"]'), d=>{
+          d.style.background = MAT[c.mat].bg; d.style.borderRadius = '6px';
+          d.style.boxShadow = '0 4px 0 rgba(0,0,0,.45)';
+        }, {dx:paso[0]*r.width*.9, dy:paso[1]*r.height*.9, retraso:200, fin:.28});
       });
     }
     if(g.fx.k==='extract'){
@@ -126,6 +183,9 @@ function Game({g, setG, onRestart}){
         son(raro ? 'raro' : 'extraer');
         enCasilla(g.fx.cell, 'extraer', {n: 16 + v*3, vel: 3.4 + v*0.22});
         flotanteEn(casilla, BONE[g.fx.item].es+' '+v, PALETA.hueso[raro?2:0], raro);
+        vuela(casilla, document.querySelector('[data-hud="huesos"]'),
+          d=>{ d.innerHTML = svgIcono(g.fx.item, 34, PALETA.hueso[raro?1:0]); d.style.filter = 'drop-shadow(0 3px 2px rgba(0,0,0,.7))'; },
+          {lado:40, fin:.5, dura:760, retraso:120});
         if(raro) Destello(tablero.current, PALETA.hueso[2]);
       }
     }
@@ -174,6 +234,10 @@ function Game({g, setG, onRestart}){
                    buy:'compra', skillPlaster:'yeso', skillPush:'mover'};
   const run = (t, pl={}) => {
     if(SON_ACC[t]) son(SON_ACC[t]);
+    if(t==='dig' && !suave){
+      paron.current = 80;
+      golpe(tablero.current && tablero.current.querySelector('[data-cell="'+pl.from+'"] .tile'));
+    }
     setG(x=>act(x,t,pl)); setSel(null); setHoja(null);
   };
 
@@ -273,44 +337,6 @@ function Game({g, setG, onRestart}){
     }
   };
 
-  const A = ({k, t, on, dis, cost, active}) => {
-    const ico = useRef(null);
-    const gesto = () => {
-      if(!ico.current || !ico.current.animate || dis || suave) return;
-      ico.current.animate((GESTO[k] || GESTO.pausa).map(tr=>({transform:tr})),
-        {duration:520, easing:'cubic-bezier(.3,.9,.3,1)'});
-    };
-    const pulsar = e => {
-      gesto();
-      chispasEn(e.currentTarget, k, (k==='mover'||k==='subir') ? {col:['#CFE0E8','#F4EFE4']} : null);
-      if(k==='yeso') flotanteEn(e.currentTarget, '+1 yeso', PALETA.yeso[2]);
-      on();
-    };
-    return (
-      <button onClick={pulsar} onMouseEnter={gesto} onFocus={gesto} disabled={dis}
-        className="btn-fisico flex flex-col items-center justify-center gap-0.5 py-2 lg:py-2.5 rounded-xl text-[11px] lg:text-[12px] font-medium leading-tight transition-[transform,color,background-color,border-color,opacity,filter,box-shadow] active:scale-95 disabled:opacity-25 disabled:active:scale-100 bg-sedimento border hover:brightness-110 min-h-[62px] lg:min-h-[68px]"
-        style={active ? {background:'rgb(var(--acento) / .16)', borderColor:'rgb(var(--acento) / .55)', color:'rgb(var(--tinta))'} : {borderColor:'rgb(var(--borde))'}}>
-        <span ref={ico} className="block">{k==='yeso' ? <Yeso s={18}/> : <Ico k={k} s={18}/>}</span>
-        <span className="leading-none">{t}</span>
-        <span className={'leading-none text-[10px] inline-flex items-center '+(active?'opacity-75':'text-tenue')}>{cost===0?'gratis':<>{cost}<Rayo s={9}/></>}</span>
-      </button>
-    );
-  };
-
-  const TabBtn = ({id, label, badge, icon, full}) => {
-    const iconEl = icon
-      ? (ICONO[icon] ? <Ic k={icon} s={16}/> : <Ico k={icon} s={16}/>)
-      : null;
-    return (
-      <button onClick={()=>setHoja(id)} aria-label={label} title={label}
-        className={'relative flex flex-col items-center justify-center gap-1 py-1.5 min-h-[44px] px-1.5 text-[11px] text-tenue hover:text-hueso transition-colors rounded-lg hover:bg-borde/30 '+(full?'flex-1':'w-full')}>
-        {iconEl}
-        <span className="truncate leading-none">{label}</span>
-        {badge>0 && <span className="absolute top-0.5 right-0.5 min-w-[15px] h-[15px] px-1 rounded-full text-[9px] font-bold leading-[15px] bg-cinta sobre-acento">{badge}</span>}
-      </button>
-    );
-  };
-
   const puedePuntuar = g.dinoRow.filter(d=>{ if(!d) return false; const n={}; d.bones.forEach(b=>n[b]=(n[b]||0)+1);
     return Object.entries(n).every(([b,k])=>p.storage[b]>=k); }).length
     + p.lab.filter(d=>d.assigned.length===d.bones.length).length;
@@ -341,14 +367,14 @@ function Game({g, setG, onRestart}){
 
   const acciones = hum && g.phase==='actions' && (
     <>
-      <div className="grid grid-cols-4 lg:grid-cols-2 gap-1.5 lg:gap-2">
-        <A k="yeso" t="Yeso" cost={1} dis={g.energy<1||(g.pool===0&&g.reserve===0)} on={()=>run('plaster')}/>
-        <A k="mover" t="Mover" cost={1} dis={g.energy<1||!mvs.length} active={sel&&sel.m==='move'} on={()=>setSel(sel&&sel.m==='move'?null:{m:'move'})}/>
-        <A k="cavar" t="Cavar" cost={1} dis={!digs.length} active={sel&&sel.m==='dig'} on={()=>setSel(sel&&sel.m==='dig'?null:{m:'dig'})}/>
-        <A k="extraer" t="Extraer" cost={1} dis={g.energy<1||!exts.length} active={sel&&sel.m==='extract'} on={()=>setSel(sel&&sel.m==='extract'?null:{m:'extract'})}/>
-        <A k="arena" t="Arena" cost={has(p,'arenaFree')?0:1} dis={!sands.length||g.energy<(has(p,'arenaFree')?0:1)} active={sel&&sel.m==='sand'} on={()=>setSel(sel&&sel.m==='sand'?null:{m:'sand'})}/>
-        {p.pos===null && <A k="subir" t="Subir" cost={1} dis={g.energy<1||!climbs.length} active={sel&&sel.m==='climb'} on={()=>setSel({m:'climb'})}/>}
-        {has(p,'yeso2') && <A k="yeso" t="Mezcla" cost={1} dis={g.energy<1||g.usedSkill.yeso2} on={()=>run('skillPlaster')}/>}
+      <div className="grid grid-cols-5 lg:grid-cols-2 gap-1.5 lg:gap-2">
+        <Accion k="yeso" t="Yeso" cost={1} dis={g.energy<1||(g.pool===0&&g.reserve===0)} on={()=>run('plaster')}/>
+        <Accion k="mover" t="Mover" cost={1} dis={g.energy<1||!mvs.length} active={sel&&sel.m==='move'} on={()=>setSel(sel&&sel.m==='move'?null:{m:'move'})}/>
+        <Accion k="cavar" t="Cavar" cost={1} dis={!digs.length} active={sel&&sel.m==='dig'} on={()=>setSel(sel&&sel.m==='dig'?null:{m:'dig'})}/>
+        <Accion k="extraer" t="Extraer" cost={1} dis={g.energy<1||!exts.length} active={sel&&sel.m==='extract'} on={()=>setSel(sel&&sel.m==='extract'?null:{m:'extract'})}/>
+        <Accion k="arena" t="Arena" cost={has(p,'arenaFree')?0:1} dis={!sands.length||g.energy<(has(p,'arenaFree')?0:1)} active={sel&&sel.m==='sand'} on={()=>setSel(sel&&sel.m==='sand'?null:{m:'sand'})}/>
+        {p.pos===null && <Accion k="subir" t="Subir" cost={1} dis={g.energy<1||!climbs.length} active={sel&&sel.m==='climb'} on={()=>setSel({m:'climb'})}/>}
+        {has(p,'yeso2') && <Accion k="yeso" t="Mezcla" cost={1} dis={g.energy<1||g.usedSkill.yeso2} on={()=>run('skillPlaster')}/>}
       </div>
       <BtnJ cls="mt-2 w-full" on={()=>run('phase',{to:'market'})}>
         <Ico k="mercado" s={16}/> Pasar al mercado
@@ -365,7 +391,7 @@ function Game({g, setG, onRestart}){
   );
   const faseLab = hum && g.phase==='lab' && (
     <div className="flex gap-2">
-      <Btn cls="flex-1 py-3" on={()=>setHoja('dinos')}><IcoDino s={17}/> Ver dinosaurios</Btn>
+      <Btn cls="flex-1 py-3" on={()=>setHoja('dinos')}><Ico k="laboratorio" s={17}/> Al laboratorio</Btn>
       <BtnJ cls="flex-1" on={()=>run('endTurn')}>
         <Ico k="turno" s={15}/> Terminar turno
       </BtnJ>
@@ -391,17 +417,11 @@ function Game({g, setG, onRestart}){
                 </span>
                 {g.remaining!==undefined && <span className="ml-1.5 text-arcilla">quedan {g.remaining} turnos</span>}</div>
             </div>
-            <div className="flex gap-[3px] items-center" title={'Energía: '+g.energy}>
-              {g.energy===0 && g.phase==='actions'
-                ? <span className="text-[10px] text-arcilla font-medium px-1.5 py-0.5 rounded bg-arcilla/15 border border-arcilla/40">sin energía</span>
-                : <>
-                  {Array.from({length:Math.max(g.energy,0)},(_,k)=><span key={k} className="w-[7px] h-4 rounded-sm"
-                    style={{background:'rgb(var(--acento))', boxShadow:'inset 0 1px 0 rgba(255,255,255,.4), 0 2px 0 rgba(0,0,0,.4)'}}/>)}
-                  {Array.from({length:Math.max(startEnergy(p)-g.energy,0)},(_,k)=><span key={k} className="w-[7px] h-4 rounded-sm bg-borde"/>)}
-                </>}
+            <div className="flex gap-[3px] items-center" title={'Energía: '+g.energy} aria-label={'Energía: '+g.energy}>
+              {Array.from({length:Math.max(startEnergy(p), g.energy)},(_,k)=><span key={k} className={'pip'+(k<g.energy?'':' gastada')}/>)}
             </div>
             <div ref={marcador} className="text-right shrink-0 w-10">
-              <div className="disp font-extrabold text-lg leading-none text-hueso">{p.vp}</div>
+              <div className="disp font-extrabold text-lg leading-none text-hueso tabular-nums"><Rodante key={p.id} n={p.vp}/></div>
               <div className="text-[10px] text-tenue leading-none">PV</div>
             </div>
           </div>
@@ -413,7 +433,9 @@ function Game({g, setG, onRestart}){
               {g.pool===0 && <span className="text-[11px] text-arcilla self-center">vacío · evento inminente</span>}
               {g.pool>0 && g.pool<=2 && <span className="text-[11px] text-cinta self-center">quedan {g.pool}</span>}
             </div>
-            <span className="text-[11px] text-tenue shrink-0 flex items-center gap-1"><Yeso s={12}/><b className="text-hueso">{p.plaster}</b></span>
+            <span className="hud" data-hud="losetas" title="Losetas reclamadas"><span className="hud-loseta"/><b>{p.tiles.length}</b></span>
+            <span className="hud" data-hud="huesos" title="Huesos en el almacén"><Ic k="femur" s={13}/><b>{totalBones(p)}</b></span>
+            <span className="hud" data-hud="yeso" title="Yeso"><Yeso s={13}/><b>{p.plaster}</b></span>
           </div>
         </div>
       </header>
@@ -454,11 +476,11 @@ function Game({g, setG, onRestart}){
 
           <aside className="lg:h-full lg:overflow-y-auto lg:min-h-0 lg:pr-1 mt-3 lg:mt-0">
             <div className="hidden lg:flex gap-0.5 mb-3 rounded-xl border border-borde/70 bg-sedimento/40 p-1">
-              <TabBtn id="dinos" label="Dinos" badge={puedePuntuar} icon="teropodo"/>
-              <TabBtn id="mercado" label="Mercado" icon="mercado"/>
-              <TabBtn id="equipo" label="Equipo" badge={p.tools.filter(t=>!t.used).length} icon="equipo"/>
-              <TabBtn id="marcador" label="Marcador" icon="marcador"/>
-              <TabBtn id="pausa" label="Pausa" icon="pausa"/>
+              <TabBtn abrir={setHoja} id="dinos" label="Dinos" badge={puedePuntuar} icon="dinos"/>
+              <TabBtn abrir={setHoja} id="mercado" label="Mercado" icon="mercado"/>
+              <TabBtn abrir={setHoja} id="equipo" label="Equipo" badge={p.tools.filter(t=>!t.used).length} icon="equipo"/>
+              <TabBtn abrir={setHoja} id="marcador" label="Marcador" icon="marcador"/>
+              <TabBtn abrir={setHoja} id="pausa" label="Pausa" icon="pausa"/>
             </div>
 
             {acciones}
@@ -481,17 +503,17 @@ function Game({g, setG, onRestart}){
 
       <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 flex bg-sedimento/98"
         style={{paddingBottom:'env(safe-area-inset-bottom)', boxShadow:'0 -4px 0 rgba(0,0,0,.3), 0 -12px 22px -10px rgba(0,0,0,.7)'}}>
-        <TabBtn id="dinos" label="Dinosaurios" badge={puedePuntuar} full/>
-        <TabBtn id="mercado" label="Mercado" full/>
-        <TabBtn id="equipo" label="Tu equipo" badge={p.tools.filter(t=>!t.used).length} full/>
-        <TabBtn id="marcador" label="Marcador" full/>
-        <TabBtn id="pausa" label="Pausa" icon="pausa" full/>
+        <TabBtn abrir={setHoja} id="dinos" label="Dinos" badge={puedePuntuar} icon="dinos" full/>
+        <TabBtn abrir={setHoja} id="mercado" label="Mercado" icon="mercado" full/>
+        <TabBtn abrir={setHoja} id="equipo" label="Equipo" badge={p.tools.filter(t=>!t.used).length} icon="equipo" full/>
+        <TabBtn abrir={setHoja} id="marcador" label="Marcador" icon="marcador" full/>
+        <TabBtn abrir={setHoja} id="pausa" label="Pausa" icon="pausa" full/>
       </nav>
 
       {banda && !cola.length && <Banda key={banda.id} banda={banda}/>}
       {cola.length>0 && <Momento key={cola[0].id || 'apertura'} m={cola[0]} onFin={()=>setCola(c=>c.slice(1))}/>}
 
-      {toast && <div key={toast.id} role="status" aria-live="polite" className="flota fixed left-1/2 -translate-x-1/2 bottom-20 z-40 max-w-[90vw] px-3.5 py-2 rounded-full bg-hueso text-esquisto text-[12px] font-medium"
+      {toast && <div key={toast.id} role="status" aria-live="polite" className="flota fixed left-1/2 -translate-x-1/2 top-[86px] lg:top-auto lg:bottom-6 z-40 pointer-events-none max-w-[90vw] px-3.5 py-2 rounded-full bg-hueso text-esquisto text-[12px] font-medium"
         style={{boxShadow:'0 4px 0 rgba(0,0,0,.4), 0 12px 20px -8px rgba(0,0,0,.7)'}}>{toast.t}</div>}
 
       {evt && <Hoja title={evt.n} sub="Evento" onClose={()=>setEvt(null)}>

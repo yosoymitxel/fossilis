@@ -32,7 +32,7 @@ function Setup({onStart, onVolver}){
       players: mesa.map((s,i)=>({name:(s.name||'').trim() || (s.isAI?'Bot ':'Jugador ')+(i+1), isAI:s.isAI}))});
   };
   return (
-    <div data-sala={salaDe('modular', tema)} className="pantalla min-h-[100svh] bg-esquisto text-hueso px-4 py-5 lg:py-10">
+    <div data-sala={salaDe('modular', tema)} className="pantalla min-h-[100svh] bg-esquisto text-hueso px-4 pt-5 pb-28 lg:py-10">
       <TEX/>
       <div className="w-full max-w-4xl mx-auto">
         <button onClick={onVolver} className="inline-flex items-center gap-1.5 min-h-11 pr-3 text-[14px] text-tenue hover:text-hueso transition-colors">
@@ -79,10 +79,12 @@ function Setup({onStart, onVolver}){
               <input id="semilla" value={seed} onChange={e=>setSeed(e.target.value.replace(/\D/g,'').slice(0,6))} inputMode="numeric"
                 className="w-24 bg-sedimento border-[1.5px] border-borde rounded-lg px-2.5 py-2 text-right text-[16px] tabular-nums"/>
               <button onClick={()=>{ son('yeso'); setSeed(Math.floor(Math.random()*99999)); }} aria-label="Otra semilla al azar"
-                className="btn-fisico w-11 h-11 rounded-lg bg-sedimento border-[1.5px] border-borde flex items-center justify-center shrink-0"><Ico k="turno" s={17}/></button>
+                className="btn-fisico w-11 h-11 rounded-lg bg-sedimento border-[1.5px] border-borde flex items-center justify-center shrink-0"><Ico k="azar" s={19}/></button>
             </div>
-            <button onClick={start} className="btn-fisico mt-3 w-full bg-cinta sobre-acento disp font-extrabold text-[17px] py-3.5 rounded-xl active:scale-[.99] transition-transform">
-              Abrir el yacimiento</button>
+            <div className="empezar">
+              <button onClick={start} className="btn-fisico w-full bg-cinta sobre-acento disp font-extrabold text-[17px] py-3.5 rounded-xl active:scale-[.97] transition-transform">
+                Abrir el yacimiento</button>
+            </div>
           </section>
         </div>
       </div>
