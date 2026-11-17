@@ -1,88 +1,90 @@
-const {useState, useRef, useEffect} = React;
-const {DINOS} = FG.data;
-const {Silueta, TEX, Temas, NOTA_TEMA, NOMBRE_TEMA} = FG.ui;
-const {MOT, irPantallaCompleta, useTema, salaDe} = FG.fx;
-function Setup({onStart}){
+const {useState} = React;
+const {COLORS} = FG.data;
+const {TEX, Peon, Ico} = FG.ui;
+const {irPantallaCompleta, useTema, salaDe, son} = FG.fx;
+const BOTS = ['Anning','Cope','Marsh','Owen','Bakker'];
+const REGLAS = [
+  ['agresivas','Habilidades de enfrentamiento','Entran en la fila las habilidades que fastidian al rival'],
+  ['lotes','Lotes y variedad al final','Puntos extra por colecciones variadas'],
+  ['mayorias','Mayorías al final','Puntos para quien más tenga de cada cosa'],
+];
+function Setup({onStart, onVolver}){
   const [tema] = useTema();
-  const [n,setN] = useState(3);
-  const [bots,setBots] = useState(2);
+  const [mesa,setMesa] = useState([{name:'Jugador 1', isAI:false},{name:BOTS[0], isAI:true},{name:BOTS[1], isAI:true}]);
   const [seed,setSeed] = useState(()=>Math.floor(Math.random()*99999));
   const [opts,setOpts] = useState({agresivas:true, lotes:true, mayorias:true});
-  const humans = n - Math.min(bots,n-1);
+  const humanos = mesa.filter(s=>!s.isAI).length;
+  const libre = (bot, lista) => {
+    const usados = lista.map(s=>s.name);
+    if(bot) return BOTS.find(n=>!usados.includes(n)) || 'Bot';
+    for(let k=1;;k++) if(!usados.includes('Jugador '+k)) return 'Jugador '+k;
+  };
+  const editar = (i, cambio) => setMesa(m=>m.map((s,k)=>k===i ? Object.assign({}, s, cambio) : s));
+  const alternar = i => { son('ui'); setMesa(m=>{
+    const resto = m.filter((_,k)=>k!==i);
+    return m.map((s,k)=>k===i ? {isAI:!s.isAI, name:libre(!s.isAI, resto)} : s); }); };
+  const sumar = () => { son('ui'); setMesa(m=>m.concat({isAI:true, name:libre(true, m)})); };
+  const quitar = i => { son('ui'); setMesa(m=>m.filter((_,k)=>k!==i)); };
 
   const start = () => {
-    irPantallaCompleta();
+    irPantallaCompleta(); son('abrir');
     onStart({seed:Number(seed)||1, opts,
-      players: Array.from({length:n},(_,i)=>({name: i<humans?'Jugador '+(i+1):'Bot '+(i-humans+1), isAI:i>=humans}))});
+      players: mesa.map((s,i)=>({name:(s.name||'').trim() || (s.isAI?'Bot ':'Jugador ')+(i+1), isAI:s.isAI}))});
   };
-
-  const Row = ({label, children}) => (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3">
-      <span className="text-[16px] text-hueso/90">{label}</span>{children}</div>);
-  const caja = useRef(null);
-  useEffect(()=>{
-    const m = MOT(); if(!m || !caja.current) return;
-    m.animate(caja.current.querySelectorAll('[data-e]'),
-      {opacity:[0,1], transform:['translateY(18px)','translateY(0px)']},
-      {delay:m.stagger(0.06), duration:.5, ease:[.2,.9,.3,1]});
-    const sil = caja.current.querySelectorAll('[data-sil]');
-    if(sil.length) m.animate(sil, {opacity:[0,.55], transform:['translateY(26px) scale(.9)','translateY(0px) scale(1)']},
-      {delay:m.stagger(0.1, {startDelay:.15}), duration:.7, type:'spring', bounce:.34});
-  },[]);
-  const Pick = ({v, set, vals}) => <div className="flex gap-1">{vals.map(k=>
-    <button key={k} onClick={()=>set(k)} aria-pressed={v===k}
-      className={'w-11 h-11 rounded-lg text-[15px] disp font-bold transition-colors btn-fisico '+(v===k?'bg-cinta sobre-acento':'bg-sedimento text-hueso border-[1.5px] border-borde hover:bg-borde/10')}>{k}</button>)}</div>;
   return (
-    <div ref={caja} data-sala={salaDe('modular', tema)} className="min-h-[100svh] bg-esquisto text-hueso px-4 py-6 flex items-center justify-center">
+    <div data-sala={salaDe('modular', tema)} className="pantalla min-h-[100svh] bg-esquisto text-hueso px-4 py-5 lg:py-10">
       <TEX/>
-      <div className="w-full max-w-5xl">
-        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-6 lg:gap-14 items-center">
-          <div className="min-w-0">
-            <div className="relative h-24 lg:h-36 -mb-2 overflow-hidden">
-              <div className="absolute inset-0 flex items-end justify-center gap-2 origin-bottom lg:scale-[1.3]">
-                {[['Stegosaurus',56],['Tyrannosaurus rex',88],['Pteranodon',52]].map(([n,s])=>{
-                  const d=DINOS.find(x=>x.name===n);
-                  return <span key={n} data-sil style={{color:'rgb(var(--tinta))', opacity:.16}}><Silueta d={d} s={s}/></span>;})}
-              </div>
-              <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-esquisto to-transparent"/>{/* taste-skill-ignore: niebla del hero sobre las siluetas */}
+      <div className="w-full max-w-4xl mx-auto">
+        <button onClick={onVolver} className="inline-flex items-center gap-1.5 min-h-11 pr-3 text-[14px] text-tenue hover:text-hueso transition-colors">
+          <span aria-hidden="true" className="text-[18px] leading-none">←</span> Portada</button>
+        <h1 className="disp font-extrabold text-[34px] lg:text-[52px] leading-[0.95] mt-1">Preparar la expedición</h1>
+        <p className="text-hueso/75 text-[15px] mt-2 max-w-[52ch]">Sienta a la mesa de dos a cinco paleontólogos. Los asientos de bot juegan solos.</p>
+
+        <div className="grid lg:grid-cols-[1.15fr_1fr] gap-4 lg:gap-6 mt-5 items-start">
+          <section className="carta-fisica rounded-2xl p-3 lg:p-4 entra min-w-0">
+            <h2 className="rotulo text-[11px] text-tenue px-1">La mesa · {mesa.length} de 5</h2>
+            <ul className="grid gap-2 mt-2">
+              {mesa.map((s,i)=>(
+                <li key={i} className="flex items-center gap-2.5 rounded-xl border-[1.5px] border-borde bg-sedimento p-2">
+                  <Peon color={COLORS[i]} letra={(s.name[0]||'?').toUpperCase()} s={32}/>
+                  <input value={s.name} maxLength={14} size={1} onChange={e=>editar(i,{name:e.target.value})}
+                    aria-label={'Nombre del asiento '+(i+1)}
+                    className="min-w-0 flex-1 bg-transparent disp font-bold text-[16px] py-2 px-1 rounded-md"/>
+                  <button onClick={()=>alternar(i)} disabled={!s.isAI && humanos<=1} aria-pressed={s.isAI}
+                    title={!s.isAI && humanos<=1 ? 'Hace falta al menos una persona' : undefined}
+                    className={'btn-fisico min-h-11 px-3 rounded-lg text-[13px] font-semibold border-[1.5px] shrink-0 '+
+                      (s.isAI ? 'bg-esquisto text-hueso border-borde' : 'bg-cinta sobre-acento border-cinta')}>
+                    {s.isAI ? 'Bot' : 'Persona'}</button>
+                  <button onClick={()=>quitar(i)} disabled={mesa.length<=2 || (!s.isAI && humanos<=1)} aria-label={'Quitar a '+s.name}
+                    className="w-9 h-11 rounded-lg text-[20px] leading-none text-tenue hover:text-hueso disabled:opacity-20 shrink-0">×</button>
+                </li>))}
+            </ul>
+            {mesa.length<5 && <button onClick={sumar}
+              className="mt-2 w-full min-h-11 rounded-xl border-[1.5px] border-dashed border-borde text-[14px] text-tenue hover:text-hueso hover:border-tenue transition-colors">
+              + Añadir paleontólogo</button>}
+          </section>
+
+          <section className="carta-fisica rounded-2xl p-3 lg:p-4 entra min-w-0" style={{animationDelay:'.08s'}}>
+            <h2 className="rotulo text-[11px] text-tenue px-1">Reglas</h2>
+            {REGLAS.map(([k,t,d])=>(
+              <button key={k} type="button" role="switch" aria-checked={opts[k]} onClick={()=>{ son('ui'); setOpts(o=>Object.assign({}, o, {[k]:!o[k]})); }}
+                className="w-full flex items-center gap-3 py-2.5 px-1 min-h-11 text-left">
+                <span className="flex-1 min-w-0"><span className="disp font-bold text-[14px] block">{t}</span>
+                  <span className="text-[12px] text-tenue leading-snug block">{d}</span></span>
+                <span className="palanca" aria-hidden="true"/>
+              </button>))}
+            <div className="flex items-center gap-2 py-2.5 px-1">
+              <label htmlFor="semilla" className="flex-1 min-w-0"><span className="disp font-bold text-[14px] block">Semilla del montaje</span>
+                <span className="text-[12px] text-tenue leading-snug block">El mismo número monta el mismo yacimiento</span></label>
+              <input id="semilla" value={seed} onChange={e=>setSeed(e.target.value.replace(/\D/g,'').slice(0,6))} inputMode="numeric"
+                className="w-24 bg-sedimento border-[1.5px] border-borde rounded-lg px-2.5 py-2 text-right text-[16px] tabular-nums"/>
+              <button onClick={()=>{ son('yeso'); setSeed(Math.floor(Math.random()*99999)); }} aria-label="Otra semilla al azar"
+                className="btn-fisico w-11 h-11 rounded-lg bg-sedimento border-[1.5px] border-borde flex items-center justify-center shrink-0"><Ico k="turno" s={17}/></button>
             </div>
-            <h1 data-e className="disp font-extrabold text-[44px] sm:text-[54px] lg:text-[80px] xl:text-[100px] leading-[0.92] mt-1">Fossilis</h1>
-            <p data-e className="text-hueso/80 text-[16px] mt-3 leading-relaxed max-w-[46ch]">
-              Yacimiento abierto. Cinco por cinco casillas de arena, arcilla y piedra. Debajo hay cuarenta y cinco huesos
-              que nadie ha visto. Empuja el terreno, gasta yeso y llévate el esqueleto antes que el resto.
-            </p>
-          </div>
-          <div data-e className="carta-fisica rounded-2xl p-4 lg:p-5">
-            <details className="pb-1">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3">
-                <span className="text-[16px] text-hueso/90">Tema</span>
-                <span className="inline-flex items-center gap-2 text-[13px] text-tenue">
-                  {NOMBRE_TEMA[tema]}<span className="text-hueso/70">Elegir</span></span>
-              </summary>
-              <div className="mt-1"><Temas/></div>
-              <p className="text-[13px] text-tenue leading-snug mt-2">{NOTA_TEMA[tema]}</p>
-            </details>
-            <Row label="Paleontólogos"><Pick v={n} set={k=>{setN(k);setBots(Math.min(bots,k-1));}} vals={[2,3,4,5]}/></Row>
-            <Row label="De ellos, bots"><Pick v={bots} set={setBots} vals={Array.from({length:n},(_,k)=>k)}/></Row>
-            <Row label="Habilidades de enfrentamiento">
-              <input type="checkbox" checked={opts.agresivas} onChange={e=>setOpts({...opts,agresivas:e.target.checked})} className="w-6 h-6 accent-cinta"/></Row>
-            <Row label="Lotes y variedad al final">
-              <input type="checkbox" checked={opts.lotes} onChange={e=>setOpts({...opts,lotes:e.target.checked})} className="w-6 h-6 accent-cinta"/></Row>
-            <Row label="Mayorías al final">
-              <input type="checkbox" checked={opts.mayorias} onChange={e=>setOpts({...opts,mayorias:e.target.checked})} className="w-6 h-6 accent-cinta"/></Row>
-            <Row label="Semilla del montaje">
-              <input value={seed} onChange={e=>setSeed(e.target.value)} inputMode="numeric" aria-label="Semilla del montaje"
-                className="w-28 bg-sedimento border-[1.5px] border-borde rounded-lg px-2.5 py-2 text-right text-[16px]"/></Row>
-            <button onClick={start} className="btn-fisico mt-4 w-full bg-cinta sobre-acento disp font-extrabold text-[16px] py-3 rounded-xl active:scale-[.99] transition-transform">
+            <button onClick={start} className="btn-fisico mt-3 w-full bg-cinta sobre-acento disp font-extrabold text-[17px] py-3.5 rounded-xl active:scale-[.99] transition-transform">
               Abrir el yacimiento</button>
-          </div>
+          </section>
         </div>
-        <p className="text-[16px] text-hueso/75 mt-6 leading-relaxed text-center max-w-[64ch] mx-auto">
-          Adaptación personal del juego de David Díaz publicado por Kids Table Board Gaming.
-          Sin ánimo de lucro y sin material del editor. Siluetas e iconos de Lorc, Delapouite y
-          Caro Asercion (game-icons.net), bajo licencia CC BY 3.0. Retratos en miniatura servidos
-          por Wikipedia/Wikimedia Commons (CORS abierto).
-        </p>
       </div>
     </div>
   );

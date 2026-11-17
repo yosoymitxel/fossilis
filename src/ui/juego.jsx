@@ -3,8 +3,8 @@ const {MAT, BONE} = FG.data;
 const {cur, has, digCost, digTargets, extractTargets, moveTargets, sandTargets, climbTargets, planDig, pasoHacia, marketCap, startEnergy, act, aiStep, totalBones, solvePayment, DIRS, reach} = FG.core;
 const {ERA_COL, eraDe} = FG.ui;
 const {Peon, Cell, Hoja, Btn, BtnJ, Banda, TEX, Ico, Ic, IcoDino, Yeso, Rayo, ICONO} = FG.ui;
-const {Hojas, Final, Pausa} = FG.ui;
-const {son, chispasEn, flotanteEn, Sacudida, Destello, Chispas, PERFIL, PALETA, MAT_PAL, GESTO, SUAVE, quieto, useTema, salaDe} = FG.fx;
+const {Hojas, Pausa, Momento} = FG.ui;
+const {son, chispasEn, flotanteEn, Sacudida, Destello, Chispas, PERFIL, PALETA, MAT_PAL, GESTO, SUAVE, quieto, useTema, salaDe, AJUSTES, RITMO} = FG.fx;
 const PISTAS = [
   {k:'inicio',  cond:g=>true,
    t:'Cavar empuja una loseta y todo lo que tenga detrás. Gastas energía arriba a la derecha.'},
@@ -39,6 +39,12 @@ function Game({g, setG, onRestart}){
   const vuelo = useRef(new Map());
   const [banda,setBanda] = useState(null);
   const [vistas,setVistas] = useState([]);
+  // Escenas intermedias: se muestran de una en una y los bots esperan a que acaben.
+  const cine = () => AJUSTES.cinematicas && !quieto();
+  const [cola,setCola] = useState(()=> g.log.length<=1 && !g.reanudada && cine() ? [{k:'apertura', g}] : []);
+  const encolar = m => setCola(c=>c.concat(Object.assign({id:Date.now()+Math.random()}, m)));
+  const lastScored = useRef({});
+  const lastFin = useRef(g.endTrigger);
   const col = p.color;
   const suave = SUAVE;
 
@@ -113,8 +119,10 @@ function Game({g, setG, onRestart}){
   useEffect(()=>{
     if(g.turn===lastTurn.current) return;
     lastTurn.current = g.turn;
+    const q = cur(g);
+    if(cine() && !q.isAI && g.players.filter(x=>!x.isAI).length>1){ encolar({k:'relevo', jugador:q}); return; }
     son('turno');
-    setBanda({texto:'Turno de '+cur(g).name, color:cur(g).color, id:Date.now()});
+    setBanda({texto:'Turno de '+q.name, color:q.color, id:Date.now()});
     const t = setTimeout(()=>setBanda(null), 1700);
     return ()=>clearTimeout(t);
   },[g.turn]);
@@ -126,8 +134,10 @@ function Game({g, setG, onRestart}){
       if(d>0){
         if(q.id===g.turn || d>=8)
           flotanteEn(marcador.current, '+'+d+' PV', q.color, d>=8);
-        if(d>=12){
-          const ult = q.scored[q.scored.length-1];
+        const ult = q.scored[q.scored.length-1];
+        const nuevo = q.scored.length > (lastScored.current[q.id]===undefined ? q.scored.length : lastScored.current[q.id]);
+        if(nuevo && ult && cine()) encolar({k:'museo', dino:ult, pv:d, jugador:q});
+        else if(d>=12){
           const cE = ult ? ERA_COL[eraDe(ult)] : '#A97F3C';
           const pal = [cE,'#F4EFE4','#CFE0E8'];
           son('esqueleto');
@@ -139,7 +149,10 @@ function Game({g, setG, onRestart}){
         }
       }
       lastVP.current[q.id]=q.vp;
+      lastScored.current[q.id]=q.scored.length;
     });
+    if(g.endTrigger && !lastFin.current && !g.over && cine()) encolar({k:'ultima'});
+    lastFin.current = g.endTrigger;
   },[g]);
 
   const SON_ACC = {move:'mover', sand:'arena', climb:'subir', plaster:'yeso',
@@ -157,9 +170,10 @@ function Game({g, setG, onRestart}){
     }
     const id = g.lastEvent ? g.lastEvent.id : 0;
     if(id>lastEvt.current){
-      lastEvt.current = id; setEvt(g.lastEvent);
+      lastEvt.current = id;
+      if(cine()) encolar({k:'evento', evento:g.lastEvent, deposito:g.poolIndex});
+      else { setEvt(g.lastEvent); son('evento'); }
       Chispas(window.innerWidth/2, window.innerHeight*0.24, PERFIL.evento);
-      son('evento');
       Destello(tablero.current, PALETA.evento[0]);
       Sacudida(tablero.current, 6);
     }
@@ -168,16 +182,15 @@ function Game({g, setG, onRestart}){
 
   useEffect(()=>{
     if(g.over || !cur(g).isAI) { guard.current=0; return; }
+    if(cola.length) return;
     const id = setTimeout(()=>{
       guard.current++;
       const s = guard.current>70 ? {t:'endTurn'} : aiStep(g);
       setG(x=>act(x, s.t, s));
       if(s.t==='endTurn') guard.current=0;
-    }, 430);
+    }, RITMO[AJUSTES.ritmo] || 430);
     return ()=>clearTimeout(id);
-  }, [g]);
-
-  if(g.over) return <Final g={g} onRestart={onRestart}/>;
+  }, [g, cola.length]);
 
   const canAfford = c => !!solvePayment(p.tiles, c.cost);
   const digs  = digTargets(g,p).filter(i=>digCost(p, g.cells[i][g.cells[i].length-1].mat) <= g.energy);
@@ -187,7 +200,7 @@ function Game({g, setG, onRestart}){
   const climbs= climbTargets(g,p);
   const tool  = sel && sel.m==='tool' ? p.tools[sel.ti].card : null;
   const hum   = !p.isAI;
-  const pista = hum ? PISTAS.find(x=>vistas.indexOf(x.k)<0 && x.cond(g,p)) : null;
+  const pista = hum && AJUSTES.pistas ? PISTAS.find(x=>vistas.indexOf(x.k)<0 && x.cond(g,p)) : null;
 
   let hi = new Set();
   if(sel && hum){
@@ -345,7 +358,7 @@ function Game({g, setG, onRestart}){
   );
 
   return (
-    <div data-sala={salaDe('vitrina', tema)} className="min-h-[100svh] lg:h-[100svh] lg:overflow-hidden flex flex-col pb-20 lg:pb-0">
+    <div data-sala={salaDe('vitrina', tema)} className="pantalla min-h-[100svh] lg:h-[100svh] lg:overflow-hidden flex flex-col pb-20 lg:pb-0">
       <TEX/>
       <header className="shrink-0 z-30"
         style={{background:'rgb(var(--fondo) / .94)', borderBottom:'2px solid rgb(var(--acento) / .28)',
@@ -357,8 +370,11 @@ function Game({g, setG, onRestart}){
               <div className="disp font-bold text-[14px] leading-none truncate">{p.name}
                 {p.isAI && <span className="text-tenue font-normal text-[12px]"> · excavando</span>}</div>
               <div className="text-[12px] text-tenue leading-none mt-1">
-                {g.phase==='actions'?'acciones':g.phase==='market'?'mercado':'laboratorio'}
-                {g.remaining!==undefined && ' · quedan '+g.remaining+' turnos'}</div>
+                <span className="fases" aria-label={'Fase: '+({actions:'acciones',market:'mercado',lab:'laboratorio'})[g.phase]}>
+                  {[['actions','Acciones'],['market','Mercado'],['lab','Laboratorio']].map(([k,n],i,a)=>
+                    <i key={k} className={g.phase===k ? 'on' : a.findIndex(x=>x[0]===g.phase)>i ? 'hecha' : ''}>{n}</i>)}
+                </span>
+                {g.remaining!==undefined && <span className="ml-1.5 text-arcilla">quedan {g.remaining} turnos</span>}</div>
             </div>
             <div className="flex gap-[3px] items-center" title={'Energía: '+g.energy}>
               {g.energy===0 && g.phase==='actions'
@@ -375,7 +391,7 @@ function Game({g, setG, onRestart}){
             </div>
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-[11px] text-tenue shrink-0">Depósito {g.poolIndex}/4</span>
+            <span className="text-[11px] text-tenue shrink-0">Depósito {Math.min(g.poolIndex,4)}/4</span>
             <div className="flex gap-[2px] flex-1 h-2.5 items-stretch">
               {Array.from({length:Math.max(g.pool,0)},(_,k)=><span key={k} className="flex-1 max-w-[10px] bg-hueso rounded-[2px]"
                 style={{boxShadow:'inset 0 1px 0 rgba(255,255,255,.5), 0 1px 0 rgba(0,0,0,.4)'}}/>)}
@@ -457,7 +473,8 @@ function Game({g, setG, onRestart}){
         <TabBtn id="pausa" label="Pausa" icon="pausa" full/>
       </nav>
 
-      {banda && <Banda key={banda.id} banda={banda}/>}
+      {banda && !cola.length && <Banda key={banda.id} banda={banda}/>}
+      {cola.length>0 && <Momento key={cola[0].id || 'apertura'} m={cola[0]} onFin={()=>setCola(c=>c.slice(1))}/>}
 
       {toast && <div key={toast.id} role="status" aria-live="polite" className="flota fixed left-1/2 -translate-x-1/2 bottom-20 z-40 max-w-[90vw] px-3.5 py-2 rounded-full bg-hueso text-esquisto text-[12px] font-medium"
         style={{boxShadow:'0 4px 0 rgba(0,0,0,.4), 0 12px 20px -8px rgba(0,0,0,.7)'}}>{toast.t}</div>}

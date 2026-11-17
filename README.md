@@ -14,11 +14,18 @@ npx -y http-server -p 8123 -c-1 .
 
 O doble clic en `servir.cmd`. Abrir `http://localhost:8123/`.
 
+## Pantallas
+
+Portada con diorama 3D del yacimiento (modelos de polyfork.dev; si no hay red queda la ilustración
+SVG), preparación de la mesa con nombres y bots por asiento, opciones (volumen, ambiente,
+animaciones, escenas intermedias, ritmo de bots, pistas, tema) y escenas intermedias: apertura,
+evento, esqueleto completo, relevo entre personas, última ronda y cierre.
+
 ## Temas
 
 El tema se elige en el menú (`Tema · Elegir`) y en la pausa. **Gabinete** es el
 tema oscuro por defecto; **Modular**, **Libreta** y **Sección** visten toda la app
-con una sola sala. El tema no se guarda entre recargas.
+con una sola sala.
 
 ## Documentación
 
@@ -29,5 +36,5 @@ con una sola sala. El tema no se guarda entre recargas.
 
 ## Estado
 
-Juego jugable de principio a fin. El estado de la partida y los ajustes de
-prototipo (tema, sonido, animación) no se persisten entre recargas.
+Juego jugable de principio a fin. Ajustes y partida en curso se guardan en este
+dispositivo (`localStorage`); la portada ofrece continuar.

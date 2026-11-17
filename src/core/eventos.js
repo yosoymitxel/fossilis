@@ -6,7 +6,7 @@ function resolveEvent(g, log){
   log.push('EVENTO — '+ev.n+': '+ev.d);
   const ef = [];
   const lista = a => a.map(p=>p.name).join(', ');
-  g.lastEvent = {n:ev.n, d:ev.d, efectos:ef, id:(g.lastEvent?g.lastEvent.id:0)+1};
+  g.lastEvent = {k:ev.k, n:ev.n, d:ev.d, efectos:ef, id:(g.lastEvent?g.lastEvent.id:0)+1};
   switch(ev.k){
     case 'derrumbe': {
       const heavy = g.discard.slice().sort((a,b)=>MAT[b.mat].w-MAT[a.mat].w).slice(0,2);
