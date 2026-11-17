@@ -272,3 +272,17 @@ temas (Modular, Libreta, Sección) no cambia.
 - Tablero: al cambiar de tamaño (pantalla completa, giro) las losetas se recolocan sin animarse.
 - Modales: la hoja se prepara fuera de pantalla antes del primer cuadro; el menú ya no repite su
   entrada al abrir un modal y las palancas conservan su transición (componentes fuera del render).
+
+## Tablero, iconos y game feel (noviembre 2026)
+
+- Móvil: el botón «Abrir el yacimiento» queda fijo abajo; `body` pasa a `overflow-x:clip` y las entradas
+  ya no dejan la animación activa (`backwards`), que anclaba los `fixed` a su caja.
+- Iconos unificados en game-icons.net: cavar (pala de trinchera), extraer (brocha), mover (huellas),
+  arena (cubo), yeso (venda), subir (escalera), laboratorio (microscopio), mercado, equipo, marcador,
+  pausa, sonido, pantalla. El botón de la fase de laboratorio dice «Al laboratorio» con microscopio.
+- Game feel (recetas de game-feel-prompts): parón de 80 ms antes del empuje, destello en la loseta
+  golpeada, aplastamiento al caer, salto en arco del peón, losetas y huesos que vuelan al marcador,
+  contadores que rebotan, pips de energía que se apagan y PV que ruedan.
+- Acciones y pestañas fuera del render de la partida (antes se recreaban y cortaban su gesto).
+- Cabecera con contadores de losetas, huesos y yeso; barra inferior con icono en cada pestaña; avisos
+  arriba en móvil, sin tapar los botones.

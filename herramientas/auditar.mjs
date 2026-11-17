@@ -15,11 +15,11 @@ const definidores = {
   'src/core/acciones.js': ['act','endTurn'],
   'src/core/ia.js': ['boneUtility','aiStep'],
   'src/fx/entorno.js': ['irPantallaCompleta','SUAVE','AJUSTES','guardarAjustes','RITMO','guardarPartida','partidaGuardada','quieto','MOT','MUELLE','syncAnim','TEMAS','TemaCtx','useTema','salaDe'],
-  'src/fx/fx.js': ['PALETA','MAT_PAL','Chispas','PERFIL','Flotante','flotanteEn','Sacudida','Destello','chispasEn','GESTO'],
+  'src/fx/fx.js': ['PALETA','MAT_PAL','Chispas','PERFIL','Flotante','flotanteEn','Sacudida','Destello','chispasEn','GESTO','rebota','vuela','golpe'],
   'src/fx/audio.js': ['audio','tono','ruido','arpegio','SON','son','volumen','ambiente'],
   'src/ui/iconos.jsx': ['ICONO','Ic','Bone','Hammer','FragIc','Yeso','TEX','TEX_URL','ICO','Ico','IcoDino'],
   'src/ui/paleo.jsx': ['buscarDino','IMG_URLS','IMG_PROM','preload','ARQ_NOMBRE','arquetipo','Silueta','ERA_COL','EraIco','eraDe','modo','rol','Emblema','HUECOS','repartir','Rayo','AvisoIco'],
-  'src/ui/atomos.jsx': ['Coste','Btn','Frags','Peon','BtnEra','BtnEraSec','Banda','BtnJ','Temas','NOTA_TEMA','NOMBRE_TEMA'],
+  'src/ui/atomos.jsx': ['Coste','Btn','Frags','Peon','BtnEra','BtnEraSec','Banda','BtnJ','Temas','NOTA_TEMA','NOMBRE_TEMA','Rodante','svgIcono'],
   'src/ui/hoja.jsx': ['Hoja'],
   'src/ui/escena.jsx': ['Escena','horaDe'],
   'src/ui/diorama.jsx': ['Diorama','tieneDino3D'],
@@ -45,7 +45,7 @@ for (const [ruta, propios] of Object.entries(definidores)) {
   for (const m of texto.matchAll(/const \{([^}]*)\} = FG\./g)) m[1].split(',').forEach(n => destruct.add(n.trim()));
   const locales = new Set(propios);
   // palabras que también salen en textos del juego o se leen como FG.x.nombre
-  const ignorar = new Set(['has', 'endTurn', 'step', 'Portada', 'Yeso', 'useTema', 'volumen', 'ambiente']);
+  const ignorar = new Set(['has', 'endTurn', 'step', 'Portada', 'Yeso', 'useTema', 'volumen', 'ambiente', 'golpe']);
   for (const m of texto.matchAll(/(?:const|function) ([A-Za-z_$][\w$]*)/g)) locales.add(m[1]);
   const faltan = [];
   for (const [origen, nombres] of Object.entries(definidores)) {

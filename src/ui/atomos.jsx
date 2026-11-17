@@ -1,7 +1,7 @@
-const {useRef, useEffect} = React;
+const {useRef, useEffect, useState} = React;
 const {FR} = FG.data;
-const {FragIc, EraIco, eraDe, Ic, Ico} = FG.ui;
-const {MOT} = FG.fx;
+const {FragIc, EraIco, eraDe, Ic, Ico, ICONO} = FG.ui;
+const {MOT, quieto} = FG.fx;
 const Coste = ({c, s=13}) => {
   const ks = FR.concat('comodin').filter(k=>c[k]);
   if(!ks.length) return <span className="text-tenue">—</span>;
@@ -94,4 +94,24 @@ function Temas(){
       })}
     </div>);
 }
+/* Número que rueda hasta su valor nuevo (PV): se ve sumar, no saltar. */
+function Rodante({n}){
+  const [v,setV] = useState(n);
+  const previo = useRef(n);
+  useEffect(()=>{
+    const de = previo.current; previo.current = n;
+    if(de===n || quieto()){ setV(n); return; }
+    let raf, t0 = null;
+    const paso = t => { if(t0===null) t0 = t; const k = Math.min((t-t0)/650, 1);
+      setV(Math.round(de + (n-de)*(1-Math.pow(1-k,3)))); if(k<1) raf = requestAnimationFrame(paso); };
+    raf = requestAnimationFrame(paso);
+    return ()=>cancelAnimationFrame(raf);
+  },[n]);
+  return v;
+}
+const svgIcono = (k, s, color) => {
+  const o = ICONO[k]; if(!o) return '';
+  return '<svg viewBox="'+o.vb+'" width="'+s+'" height="'+s+'" fill="'+color+'">'+o.d.map(d=>'<path d="'+d+'"/>').join('')+'</svg>';
+};
+Object.assign(FG.ui, {Rodante, svgIcono});
 Object.assign(FG.ui, {Coste, Btn, Frags, Peon, BtnEra, BtnEraSec, Banda, BtnJ, Temas, NOTA_TEMA, NOMBRE_TEMA});

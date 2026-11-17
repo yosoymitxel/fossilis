@@ -48,8 +48,8 @@
 /* ---- Entradas de pantalla ---------------------------------------------------- */
 @keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes entra-zoom{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
-.entra{animation:entra .42s var(--sale) both}
-.pantalla{animation:entra-zoom .5s var(--sale) both}
+.entra{animation:entra .42s var(--sale) backwards}
+.pantalla{animation:entra-zoom .5s var(--sale) backwards}
 
 /* ---- Portada ------------------------------------------------------------------ */
 .portada{position:relative;min-height:100svh;overflow:hidden;isolation:isolate;display:flex;flex-direction:column}
@@ -139,6 +139,22 @@
   box-shadow:0 4px 0 rgb(0 0 0 / .5);transition:transform .14s} /* taste-skill-ignore: botón físico */
 .mo-boton:active{transform:translateY(2px) scale(.97)}
 
+/* ---- Cabecera de partida: energía, PV y contadores ------------------------------ */
+.pip{width:7px;height:16px;border-radius:2px;background:rgb(var(--acento));
+  box-shadow:inset 0 1px 0 rgb(255 255 255 / .4),0 2px 0 rgb(0 0 0 / .4); /* taste-skill-ignore: ficha física */
+  transition:transform .3s var(--sale),opacity .3s ease,background-color .3s ease}
+.pip.gastada{background:rgb(var(--borde));box-shadow:none;transform:scaleY(.6);opacity:.7}
+.hud{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgb(var(--tenue));flex-shrink:0}
+.hud b{color:rgb(var(--tinta));font-variant-numeric:tabular-nums}
+.hud-loseta{width:11px;height:11px;border-radius:2px;background:linear-gradient(135deg,#d9a35f,#a9603f 55%,#8a96a0)}
+
+/* Botón de empezar: en móvil queda fijo abajo, siempre a la vista */
+@media (max-width:1023px){
+  .empezar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top,rgb(var(--fondo)) 70%,rgb(var(--fondo) / 0))}
+}
+@media (min-width:1024px){ .empezar{margin-top:12px} }
+
 /* ---- Fases del turno ----------------------------------------------------------- */
 .fases{display:inline-flex;align-items:center;gap:4px}
 .fases i{font-style:normal;font-size:11px;line-height:1;padding:3px 7px;border-radius:999px;color:rgb(var(--tenue));
@@ -155,7 +171,7 @@
 @media (prefers-reduced-motion: reduce){
   .il-estrella,.il-farol,.il-motas circle,.il-bandera,.il-roca,.il-racha,.il-camion,.il-destello,.il-fosil *,
   .mo-fondo,.mo-barra,.mo-vineta,.mo-rayos{animation:none !important}
-  .entra,.pantalla,.mo-cuerpo > *,.mo-pop,.mo-silueta,.corona{animation:mo-aparece .2s ease both !important}
+  .entra,.pantalla,.mo-cuerpo > *,.mo-pop,.mo-silueta,.corona{animation:mo-aparece .2s ease backwards !important}
   .il-capa,.menu-btn{transition:none}
   .il-camion{transform:translateX(165px)} .il-roca{transform:translateY(196px)}
 }
@@ -164,6 +180,6 @@ html[data-anim="off"] .il-bandera,html[data-anim="off"] .il-roca,html[data-anim=
 html[data-anim="off"] .il-camion,html[data-anim="off"] .il-destello,html[data-anim="off"] .il-fosil *,
 html[data-anim="off"] .mo-fondo,html[data-anim="off"] .mo-barra,html[data-anim="off"] .mo-vineta,html[data-anim="off"] .mo-rayos{animation:none !important}
 html[data-anim="off"] .entra,html[data-anim="off"] .pantalla,html[data-anim="off"] .mo-cuerpo > *,html[data-anim="off"] .mo-pop,
-html[data-anim="off"] .mo-silueta,html[data-anim="off"] .corona{animation:mo-aparece .2s ease both !important}
+html[data-anim="off"] .mo-silueta,html[data-anim="off"] .corona{animation:mo-aparece .2s ease backwards !important}
 html[data-anim="off"] .il-camion{transform:translateX(165px)}
 html[data-anim="off"] .il-roca{transform:translateY(196px)}

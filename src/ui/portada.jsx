@@ -8,7 +8,7 @@ const PASOS_JUEGO = [
   ['cavar',  'Cavar',        'Empujas una loseta y todo lo que tenga detrás. Las que salen del tablero son tuyas: sus fragmentos pagan el mercado.'],
   ['extraer','Extraer',      'Donde ya no queda loseta hay fosa. Ponte al lado, saca el hueso y págalo con yeso.'],
   ['mercado','Mercado',      'Después de las acciones puedes comprar herramientas y suministros con tus fragmentos.'],
-  ['dino',   'Laboratorio',  'Con los huesos que pide una carta te la llevas al laboratorio, o la puntúas entera de golpe.'],
+  ['laboratorio','Laboratorio',  'Con los huesos que pide una carta te la llevas al laboratorio, o la puntúas entera de golpe.'],
   ['pista',  'Eventos y final','Al vaciarse el depósito de yeso salta un evento. Cuatro vaciados y llega la última ronda. Gana quien sume más PV.'],
 ];
 
@@ -44,7 +44,7 @@ function Portada({guardada, onContinuar, onNueva}){
           <Item principal={!guardada} on={()=>{ son('ui'); onNueva(); }} ico={<Ico k="cavar" s={19}/>}
             titulo="Nueva expedición" nota="Elige la mesa, las reglas y el montaje"/>
           <div className="grid grid-cols-3 gap-2">
-            {[['como','pista','Cómo se juega'],['opciones','sonido','Opciones'],['creditos','marcador','Créditos']].map(([k,i,n])=>
+            {[['como','pista','Cómo se juega'],['opciones','sonido','Opciones'],['creditos','creditos','Créditos']].map(([k,i,n])=>
               <button key={k} onClick={()=>abrir(k)} className="menu-btn entra !flex-col !items-center !gap-1 !px-2 !text-center">
                 <Ico k={i} s={18}/><span className="text-[12px] font-semibold leading-tight">{n}</span></button>)}
           </div>
@@ -58,7 +58,7 @@ function Portada({guardada, onContinuar, onNueva}){
           {PASOS_JUEGO.map(([i,t,d],n)=>(
             <li key={t} className="flex gap-3 rounded-xl border border-borde p-3">
               <span className="w-10 h-10 rounded-lg bg-borde sobre-borde flex items-center justify-center shrink-0">
-                {i==='dino' ? <Ic k="teropodo" s={20}/> : <Ico k={i} s={19}/>}</span>
+                <Ico k={i} s={20}/></span>
               <span className="min-w-0"><span className="disp font-bold text-[14px] block">{n+1}. {t}</span>
                 <span className="text-[13px] text-hueso/80 leading-snug block">{d}</span></span>
             </li>))}

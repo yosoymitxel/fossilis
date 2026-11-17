@@ -129,4 +129,40 @@ const GESTO = {
   subir:  ['translateY(0px)','translateY(-6px)','translateY(-2px)','translateY(0px)'],
   pausa:  ['scale(1)','scale(.82)','scale(1.06)','scale(1)'],
 };
+/* Vuelo al marcador: una copia sale de `desde`, sube en arco y cae encogiéndose en `hacia`,
+   que rebota al recibirla. `pinta(nodo)` viste la copia (loseta, hueso, yeso). */
+function rebota(el){
+  if(!el || quieto() || !el.animate) return;
+  el.animate([{transform:'scale(1)'},{transform:'scale(1.3)', offset:.35},{transform:'scale(1)'}],
+    {duration:340, easing:'cubic-bezier(.23,1,.32,1)'});
+}
+function vuela(desde, hacia, pinta, o={}){
+  if(!desde || !hacia || typeof document==='undefined') return;
+  const a = desde.getBoundingClientRect ? desde.getBoundingClientRect() : desde, b = hacia.getBoundingClientRect();
+  const lado = o.lado || Math.min(a.width, a.height, 56);
+  const x0 = a.left + a.width/2 + (o.dx||0), y0 = a.top + a.height/2 + (o.dy||0);
+  const x1 = b.left + b.width/2, y1 = b.top + b.height/2;
+  if(quieto()){ rebota(hacia); return; }
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:0;top:0;z-index:72;pointer-events:none;display:grid;place-items:center;'+
+    'width:'+lado+'px;height:'+lado+'px;margin:'+(-lado/2)+'px 0 0 '+(-lado/2)+'px;will-change:transform';
+  pinta(d);
+  document.body.appendChild(d);
+  const alto = Math.max(40, Math.abs(y1-y0)*.35);
+  const mx = (x0+x1)/2, my = Math.min(y0,y1) - alto;
+  const fin = o.fin || .32, t = (x,y,s,r) => 'translate('+x+'px,'+y+'px) scale('+s+') rotate('+r+'deg)';
+  d.animate([
+    {transform:t(x0,y0,1,0), offset:0, easing:'cubic-bezier(.23,1,.32,1)'},
+    {transform:t(x0,y0-14,1.12,-6), offset:.18, easing:'cubic-bezier(.5,0,.75,0)'},
+    {transform:t(mx,my,.8,8), offset:.55, easing:'cubic-bezier(.25,.6,.35,1)'},
+    {transform:t(x1,y1,fin,0), offset:1}
+  ], {duration:o.dura || 620, delay:o.retraso || 0, fill:'both'})
+   .finished.then(()=>{ d.remove(); rebota(hacia); if(o.alLlegar) o.alLlegar(); }, ()=>d.remove());
+}
+/* Golpe: la pieza se enciende un instante (white flash) */
+function golpe(el){
+  if(!el || quieto() || !el.animate) return;
+  el.animate([{filter:'brightness(2.2) saturate(.4)'},{filter:'brightness(1)'}], {duration:160, easing:'ease-out'});
+}
+Object.assign(FG.fx, {rebota, vuela, golpe});
 Object.assign(FG.fx, {PALETA, MAT_PAL, Chispas, PERFIL, Flotante, flotanteEn, Sacudida, Destello, chispasEn, GESTO});
