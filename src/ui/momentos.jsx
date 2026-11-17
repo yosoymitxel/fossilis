@@ -10,7 +10,7 @@ const ICO_EVT = {derrumbe:'cavar', subvencion:'marcador', viento:'arena', relevo
   inspeccion:'pista', temblor:'mov', prensa:'pantalla'};
 const SON_MOMENTO = {apertura:'abrir', evento:'sello', museo:'esqueleto', ultima:'sello', relevo:'turno', cierre:'cierre'};
 
-function Momento({m, onFin}){
+function Momento({m, onFin, sobre3d}){
   const [sale,setSale] = useState(false);
   const hecho = useRef(false), boton = useRef(null);
   const espera = m.k==='evento' || m.k==='relevo';
@@ -34,9 +34,9 @@ function Momento({m, onFin}){
     ultima:'Última ronda', relevo:m.jugador && 'Turno de '+m.jugador.name, cierre:'Se cierra el yacimiento'}[m.k];
   return (
     <div role="dialog" aria-modal="true" aria-label={titulo} onClick={espera ? undefined : cerrar}
-      className={'momento'+(claro?' claro':'')+(sale?' sale':'')}>
+      className={'momento'+(claro?' claro':'')+(sale?' sale':'')+(sobre3d && m.k==='apertura' ? ' sobre3d' : '')}>
       {(m.k==='apertura' || m.k==='cierre') && <>
-        <div className="mo-fondo"><Fondo hora={m.k==='cierre' ? 'noche' : 'ocaso'} plano={m.k}/></div>
+        {!(sobre3d && m.k==='apertura') && <div className="mo-fondo"><Fondo hora={m.k==='cierre' ? 'noche' : 'ocaso'} plano={m.k}/></div>}
         <div className="mo-barra a"/><div className="mo-barra b"/></>}
       {m.k==='museo' && <div className="mo-rayos" style={{'--c':cE}}/>}
 

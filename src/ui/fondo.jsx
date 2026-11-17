@@ -18,4 +18,5 @@ function Fondo({hora, plano, paralaje}){
     {hay3D!==false && <Diorama hora={hora} plano={plano} onEstado={aviso}/>}
   </>;
 }
-Object.assign(FG.ui, {Fondo});
+const sabe3D = () => hay3D;
+Object.assign(FG.ui, {Fondo, sabe3D});

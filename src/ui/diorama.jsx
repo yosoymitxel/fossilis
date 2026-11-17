@@ -5,7 +5,7 @@ const {quieto} = FG.fx;
 
 const CDN = 'https://polyfork.dev/cdn/';
 const ALTO = 1.3;                       // el campamento está a ras de suelo; el tajo, ALTO metros más abajo
-const TAJO = [7.5, 6.5];                // ancho y fondo del tajo
+const TAJO = [7, 7];                    // el tajo es cuadrado: su cuadrícula 5x5 es la del tablero
 // [id, x, z, giro en radianes, abajo en el tajo]
 const PARTES = [
   ['canvas-wall-tent-de8a04', -10.5, -5.5, .75],
@@ -60,8 +60,14 @@ const PLANOS = {
   cierre:   {de:[5,2.6,7], a:[13,11,20], mira:[0,.6,0], dura:3.6},
 };
 
-function Diorama({hora='noche', plano, dino, cls='', onEstado}){
+/* plano 'tablero': la cámara se coloca sobre el tajo para que el foso enmarque el tablero DOM.
+   encuadre: ref a {cx, cy, lado} en px del lienzo (centro y ancho de la rejilla);
+   desde 'apertura': antes de `vuelo` hace el plano de apertura y al llegar `vuelo` baja al tablero. */
+const ELEVA = 71*Math.PI/180;           // la misma inclinación que el tablero DOM (rotateX 19°)
+function Diorama({hora='noche', plano, dino, cls='', onEstado, encuadre, vuelo, desde}){
   const lienzo = useRef(null);
+  const vivo = useRef({});
+  vivo.current = {encuadre, vuelo};
   const [listo,setListo] = useState(false);
   useEffect(()=>{
     let muerto = false, raf = 0, renderer = null, alSalir = null;
@@ -125,7 +131,7 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado}){
         scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(puntos), new THREE.LineBasicMaterial({color:0xf1e7ce, transparent:true, opacity:.55})));
 
         for(const [id, x, z, giro, abajo] of PARTES){
-          if(!crear[id]) continue;
+          if(!crear[id] || (abajo && plano==='tablero')) continue;   // en partida el tajo lo ocupan las losetas
           const obj = pieza(id);
           obj.position.set(x, abajo ? -ALTO : 0, z); obj.rotation.y = giro;
           if(abajo) obj.position.y -= .12;            // medio enterrado
@@ -136,6 +142,11 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado}){
           fuego = new THREE.PointLight(0xffb060, L.fuego, 16); fuego.position.set(-6.2, 1.1, 5.4); scene.add(fuego);
           const farol = new THREE.PointLight(0xffd38a, L.fuego*.7, 11); farol.position.set(FAROL[0], 1.5, FAROL[1]); scene.add(farol);
           const tajo = new THREE.PointLight(0xcfe0e8, L.fuego*.35, 9); tajo.position.set(0, .6, 0); scene.add(tajo);
+          if(plano==='tablero'){   // focos de trabajo sobre el tajo: el tablero es la zona iluminada de la noche
+            const foco = new THREE.SpotLight(0xffe4bd, 120, 30, .42, .55, 1.4);
+            foco.position.set(1.5, 11, 6); foco.target.position.set(0, 0, 0);
+            scene.add(foco); scene.add(foco.target);
+          }
         }
       }
 
@@ -153,16 +164,45 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado}){
 
       const P = PLANOS[plano], quietud = quieto();
       let t0 = 0, ultimo = 0, vuelta = dino ? .7 : 2.35, lentos = 0, cuadros = 0;
+      // Pose del tablero: distancia para que el tajo mida lo que la rejilla, y desplazamiento al centro de la rejilla.
+      const poseTablero = (W, H) => {
+        const e = vivo.current.encuadre && vivo.current.encuadre.current;
+        const lado = e && e.lado > 40 ? e.lado : Math.min(W, H)*.7;
+        // 1.08: el tajo se ve un pelo menor que la caja de la rejilla, que incluye el borde ancho de su inclinación
+        const D = TAJO[0]*1.08*H / (2*Math.tan(camera.fov*Math.PI/360)*lado);
+        return {pos:[0, D*Math.sin(ELEVA), D*Math.cos(ELEVA)], mira:[0,0,0],
+                ox: e ? W/2 - e.cx : 0, oy: e ? H/2 - e.cy : 0};
+      };
+      const AP = PLANOS.apertura;
+      let tVuelo = 0, salida = null;
       const cuadro = t => {
         raf = requestAnimationFrame(cuadro);
-        if(document.hidden || t-ultimo < 32) return;
+        if(document.hidden || t-ultimo < (plano==='tablero' && canvas.dataset.posado ? 100 : 32)) return;
         if(!t0) t0 = t;
         const dt = ultimo ? t-ultimo : 0; ultimo = t;
         // Equipo justo: si los cuadros se atrasan, se pinta más pequeño y el navegador amplía.
         if(dt > 55) lentos++;
         if(++cuadros >= 12){ if(lentos >= 7 && escala > .34){ escala *= .6; medir(); } cuadros = lentos = 0; }
         const z = camera.userData.zoom;
-        if(P && !dino){
+        if(plano==='tablero'){
+          const r = canvas.getBoundingClientRect(), W = r.width, H = r.height, T = poseTablero(W, H);
+          const enApertura = desde==='apertura' && !vivo.current.vuelo;
+          let pos, mira, k = 1;
+          if(enApertura){
+            const ka = quietud ? 1 : Math.min(1, (t-t0)/(AP.dura*1000)), ea = 1-Math.pow(1-ka, 3);
+            pos = AP.de.map((v,i)=>(v+(AP.a[i]-v)*ea)*z*1.25); mira = AP.mira; k = 0;
+            salida = {pos, mira};
+          } else {
+            if(!tVuelo){ tVuelo = t; if(!salida) salida = {pos:T.pos.map(v=>v*1.6), mira:T.mira}; }
+            k = quietud ? 1 : Math.min(1, (t-tVuelo)/1700);
+            const e = k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2, 3)/2;
+            pos = salida.pos.map((v,i)=>v+(T.pos[i]-v)*e);
+            mira = salida.mira.map((v,i)=>v+(T.mira[i]-v)*e);
+            k = e;
+          }
+          camera.position.set(pos[0], pos[1], pos[2]); camera.lookAt(mira[0], mira[1], mira[2]);
+          if(k>0) camera.setViewOffset(W, H, T.ox*k, T.oy*k, W, H); else camera.clearViewOffset();
+        } else if(P && !dino){
           const k = quietud ? 1 : Math.min(1, (t-t0)/(P.dura*1000)), e = 1-Math.pow(1-k, 3);
           camera.position.set((P.de[0]+(P.a[0]-P.de[0])*e)*z, (P.de[1]+(P.a[1]-P.de[1])*e)*z, (P.de[2]+(P.a[2]-P.de[2])*e)*z);
           camera.lookAt(P.mira[0], P.mira[1], P.mira[2]);
@@ -173,6 +213,7 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado}){
         }
         if(fuego && !quietud) fuego.intensity = L.fuego*(.82+Math.sin(t*.011)*.1+Math.sin(t*.031)*.08);
         renderer.render(scene, camera);
+        if(plano==='tablero' && tVuelo && t-tVuelo > 1800) canvas.dataset.posado = '1';
         if(!muerto && !canvas.dataset.listo){ canvas.dataset.listo = '1'; setListo(true); if(onEstado) onEstado('listo'); }
       };
       raf = requestAnimationFrame(cuadro);
