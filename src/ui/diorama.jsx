@@ -37,6 +37,18 @@ const DINO_3D = {
 };
 const tieneDino3D = d => !!(d && DINO_3D[d.name]);
 
+/* Descargas compartidas: la portada, la apertura y el cierre piden lo mismo y solo se baja una vez.
+   Empiezan al cargar este módulo, mientras el resto del juego aún se compila. */
+const MODULOS = new Map();
+const traer = id => {
+  if(!MODULOS.has(id)) MODULOS.set(id, import(CDN+id+'.mjs').then(m=>m.createAsset));
+  return MODULOS.get(id);
+};
+const THREE_P = import('three');
+THREE_P.catch(()=>{});
+const IDS_YACIMIENTO = [...new Set(PARTES.map(p=>p[0])), 'camping-lantern-21d14b'];
+IDS_YACIMIENTO.forEach(id => traer(id).catch(()=>{}));
+
 const LUZ = {
   noche: {cielo:0x0d1426, niebla:[30,85], hemi:[0x8ea6dc, 0x2a2018, 1.25], sol:[0xa9c0ee, 1.0, [-14,22,8]], fuego:26, suelo:0x9a8058, estrellas:true},
   ocaso: {cielo:0x7a3f36, niebla:[30,80], hemi:[0xf0b78a, 0x3a2620, 1.15], sol:[0xffb070, 1.5, [-22,9,-6]], fuego:16, suelo:0xb48a58},
@@ -48,18 +60,19 @@ const PLANOS = {
   cierre:   {de:[5,2.6,7], a:[13,11,20], mira:[0,.6,0], dura:3.6},
 };
 
-function Diorama({hora='noche', plano, dino, cls=''}){
+function Diorama({hora='noche', plano, dino, cls='', onEstado}){
   const lienzo = useRef(null);
   const [listo,setListo] = useState(false);
   useEffect(()=>{
     let muerto = false, raf = 0, renderer = null, alSalir = null;
     const canvas = lienzo.current;
     (async ()=>{
-      const THREE = await import('three');
-      const ids = dino ? [DINO_3D[dino.name]] : [...new Set(PARTES.map(p=>p[0]))];
-      const mods = await Promise.allSettled(ids.map(id => import(CDN+id+'.mjs').then(m=>[id, m.createAsset])));
+      const THREE = await THREE_P;
+      const ids = dino ? [DINO_3D[dino.name]] : IDS_YACIMIENTO;
+      const mods = await Promise.allSettled(ids.map(id => traer(id).then(f=>[id, f])));
       const crear = Object.fromEntries(mods.filter(m=>m.status==='fulfilled').map(m=>m.value));
-      if(muerto || !Object.keys(crear).length) return;
+      if(muerto) return;
+      if(!Object.keys(crear).length) throw new Error('sin modelos');
       const pieza = id => { try { return crear[id]({climate:'dry', season:'summer'}); } catch(e){ return crear[id](); } };
 
       renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:!!dino, powerPreference:'low-power'});
@@ -160,10 +173,10 @@ function Diorama({hora='noche', plano, dino, cls=''}){
         }
         if(fuego && !quietud) fuego.intensity = L.fuego*(.82+Math.sin(t*.011)*.1+Math.sin(t*.031)*.08);
         renderer.render(scene, camera);
-        if(!muerto && !canvas.dataset.listo){ canvas.dataset.listo = '1'; setListo(true); }
+        if(!muerto && !canvas.dataset.listo){ canvas.dataset.listo = '1'; setListo(true); if(onEstado) onEstado('listo'); }
       };
       raf = requestAnimationFrame(cuadro);
-    })().catch(()=>{});
+    })().catch(()=>{ if(!muerto && onEstado) onEstado('fallo'); });
     return ()=>{
       muerto = true; cancelAnimationFrame(raf);
       if(alSalir) alSalir();

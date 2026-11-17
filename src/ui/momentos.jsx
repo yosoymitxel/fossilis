@@ -1,7 +1,7 @@
 // Fossilis · momentos: escenas intermedias a pantalla completa (apertura, evento, hallazgo, relevo, cierre).
 const {useState, useEffect, useRef} = React;
 const {quieto, son, Chispas, PERFIL} = FG.fx;
-const {Escena, Diorama, tieneDino3D, Peon, Silueta, ERA_COL, eraDe, Ico, Ic, Yeso} = FG.ui;
+const {Escena, Diorama, Fondo, tieneDino3D, Peon, Silueta, ERA_COL, eraDe, Ico, Ic, Yeso} = FG.ui;
 
 const DURA = {apertura:3800, museo:3200, ultima:2300, cierre:3000};   // evento y relevo esperan al jugador
 const ERA_ES = {triasico:'Triásico', jurasico:'Jurásico', cretacico:'Cretácico'};
@@ -38,8 +38,7 @@ function Momento({m, onFin}){
     <div role="dialog" aria-modal="true" aria-label={titulo} onClick={espera ? undefined : cerrar}
       className={'momento'+(claro?' claro':'')+(sale?' sale':'')}>
       {(m.k==='apertura' || m.k==='cierre') && <>
-        <div className="mo-fondo"><Escena pantalla hora={m.k==='cierre' ? 'noche' : 'ocaso'}/>
-          <Diorama hora={m.k==='cierre' ? 'noche' : 'ocaso'} plano={m.k}/></div>
+        <div className="mo-fondo"><Fondo hora={m.k==='cierre' ? 'noche' : 'ocaso'} plano={m.k}/></div>
         <div className="mo-barra a"/><div className="mo-barra b"/></>}
       {m.k==='museo' && <div className="mo-rayos" style={{'--c':cE}}/>}
 

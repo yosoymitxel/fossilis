@@ -51,7 +51,7 @@ tailwind.config = { theme: { extend: {
    Compila cada src/* con Babel y lo ejecuta en orden de dependencias.
    Cada módulo publica su API en FG (FG.data / FG.core / FG.fx / FG.ui). */
 (function(){
-  var MODULOS = ["src/data/fosiles.js","src/data/cartas.js","src/core/azar.js","src/core/geometria.js","src/core/partida.js","src/core/tablero.js","src/core/economia.js","src/core/eventos.js","src/core/puntuacion.js","src/core/acciones.js","src/core/ia.js","src/fx/entorno.js","src/fx/fx.js","src/fx/audio.js","src/ui/iconos.jsx","src/ui/paleo.jsx","src/ui/atomos.jsx","src/ui/hoja.jsx","src/ui/escena.jsx","src/ui/diorama.jsx","src/ui/opciones.jsx","src/ui/momentos.jsx","src/ui/portada.jsx","src/ui/tablero.jsx","src/ui/cartas.jsx","src/ui/setup.jsx","src/ui/pausa.jsx","src/ui/final.jsx","src/ui/hojas.jsx","src/ui/juego.jsx","src/app.jsx"];
+  var MODULOS = ["src/data/fosiles.js","src/data/cartas.js","src/core/azar.js","src/core/geometria.js","src/core/partida.js","src/core/tablero.js","src/core/economia.js","src/core/eventos.js","src/core/puntuacion.js","src/core/acciones.js","src/core/ia.js","src/fx/entorno.js","src/fx/fx.js","src/fx/audio.js","src/ui/iconos.jsx","src/ui/paleo.jsx","src/ui/atomos.jsx","src/ui/hoja.jsx","src/ui/escena.jsx","src/ui/diorama.jsx","src/ui/fondo.jsx","src/ui/opciones.jsx","src/ui/momentos.jsx","src/ui/portada.jsx","src/ui/tablero.jsx","src/ui/cartas.jsx","src/ui/setup.jsx","src/ui/pausa.jsx","src/ui/final.jsx","src/ui/hojas.jsx","src/ui/juego.jsx","src/app.jsx"];
   var OPCIONES = {presets: [[Babel.availablePresets.react, {runtime: "classic"}]], sourceType: "script"};
   function fallo(ruta, e){
     console.error("Fossilis · error cargando " + ruta, e);

@@ -1,4 +1,4 @@
-const {useState, useRef, useEffect} = React;
+const {useState, useRef, useEffect, useLayoutEffect} = React;
 const {MOT, MUELLE, useTema, salaDe} = FG.fx;
 function Hoja({title, sub, onClose, children, wide, col, sala='libreta'}){
   const panel = useRef(null), velo = useRef(null), previo = useRef(null);
@@ -16,8 +16,10 @@ function Hoja({title, sub, onClose, children, wide, col, sala='libreta'}){
       {duration:.26, ease:[.4,0,1,1]}).finished.then(onClose, onClose);
   };
 
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     const m = MOT(); if(!m || !panel.current) return;
+    velo.current.style.opacity = '0';
+    panel.current.style.transform = 'translateY(100%)';
     m.animate(velo.current, {opacity:[0,1]}, {duration:.22});
     m.animate(panel.current, {transform:['translateY(100%)','translateY(0px)']}, MUELLE);
     const hijos = panel.current.querySelectorAll('.scroll > *');
