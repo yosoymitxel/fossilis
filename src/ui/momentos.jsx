@@ -1,6 +1,6 @@
 // Fossilis · momentos: escenas intermedias a pantalla completa (apertura, evento, hallazgo, relevo, cierre).
 const {useState, useEffect, useRef} = React;
-const {quieto, son, Chispas, PERFIL} = FG.fx;
+const {quieto, son} = FG.fx;
 const {Escena, Diorama, Fondo, tieneDino3D, Peon, Silueta, ERA_COL, eraDe, Ico, Ic, Yeso} = FG.ui;
 
 const DURA = {apertura:3800, museo:3200, ultima:2300, cierre:3000};   // evento y relevo esperan al jugador
@@ -21,8 +21,6 @@ function Momento({m, onFin}){
   };
   useEffect(()=>{
     son(SON_MOMENTO[m.k]);
-    if(m.k==='museo') Chispas(window.innerWidth/2, window.innerHeight*.42,
-      Object.assign({}, PERFIL.esqueleto, {col:[ERA_COL[eraDe(m.dino)], '#F4EFE4', m.jugador.color]}));
     if(boton.current) boton.current.focus();
     const tecla = e => { if(e.key==='Enter' || e.key===' ' || e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); cerrar(); } };
     window.addEventListener('keydown', tecla, true);

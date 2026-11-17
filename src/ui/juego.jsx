@@ -4,7 +4,7 @@ const {cur, has, digCost, digTargets, extractTargets, moveTargets, sandTargets, 
 const {ERA_COL, eraDe} = FG.ui;
 const {Peon, Cell, Hoja, Btn, BtnJ, Banda, TEX, Ico, Ic, IcoDino, Yeso, Rayo, ICONO, Rodante, svgIcono} = FG.ui;
 const {Hojas, Pausa, Momento} = FG.ui;
-const {son, chispasEn, flotanteEn, Sacudida, Destello, Chispas, PERFIL, PALETA, MAT_PAL, GESTO, SUAVE, quieto, useTema, salaDe, AJUSTES, RITMO, vuela, golpe} = FG.fx;
+const {son, flotanteEn, Sacudida, Destello, polvo, destella, anillo, PALETA, MAT_PAL, GESTO, SUAVE, quieto, useTema, salaDe, AJUSTES, RITMO, vuela, golpe} = FG.fx;
 const PISTAS = [
   {k:'inicio',  cond:g=>true,
    t:'Cavar empuja una loseta y todo lo que tenga detrás. Gastas energía arriba a la derecha.'},
@@ -29,7 +29,6 @@ function Accion({k, t, on, dis, cost, active}){
   };
   const pulsar = e => {
     gesto();
-    chispasEn(e.currentTarget, k, (k==='mover'||k==='subir') ? {col:['#CFE0E8','#F4EFE4']} : null);
     if(k==='yeso'){
       flotanteEn(e.currentTarget, '+1 yeso', PALETA.yeso[2]);
       vuela(e.currentTarget, document.querySelector('[data-hud="yeso"]'), d=>{ d.innerHTML = svgIcono('ui-yeso', 26, PALETA.yeso[1]); }, {lado:30, fin:.6});
@@ -92,10 +91,6 @@ function Game({g, setG, onRestart}){
   const col = p.color;
   const suave = SUAVE;
 
-  const enCasilla = (i, k, extra) => {
-    const el = tablero.current && tablero.current.querySelector('[data-cell="'+i+'"]');
-    chispasEn(el, k, extra);
-  };
   const sitio = el => {
     let x=0, y=0, n=el;
     while(n && n!==tablero.current){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
@@ -157,11 +152,11 @@ function Game({g, setG, onRestart}){
     if(g.fx.k==='dig'){
       son(g.fx.caidas.some(c=>c.mat==='stone') ? 'piedra' : 'cavar');
       g.fx.caidas.forEach(c=>{
-        enCasilla(c.i, 'cavar', {col:PALETA[MAT_PAL[c.mat]] || PALETA.caida});
         Sacudida(tablero.current, c.mat==='stone' ? 7 : c.mat==='clay' ? 4 : 2);
         const el = tablero.current.querySelector('[data-cell="'+c.i+'"]');
         flotanteEn(el, '+ '+MAT[c.mat].es, PALETA[MAT_PAL[c.mat]][0]);
         const paso = ({N:[0,-1],S:[0,1],E:[1,0],O:[-1,0]})[g.fx.dir] || [0,0], r = el && el.getBoundingClientRect();
+        polvo(el, MAT[c.mat].bg, paso);
         if(r) vuela(el, document.querySelector('[data-hud="losetas"]'), d=>{
           d.style.background = MAT[c.mat].bg; d.style.borderRadius = '6px';
           d.style.boxShadow = '0 4px 0 rgba(0,0,0,.45)';
@@ -176,12 +171,13 @@ function Game({g, setG, onRestart}){
           {duration:460, easing:'cubic-bezier(.3,1.4,.4,1)'});
       if(g.fx.item==='martillo'){
         son('martillo');
-        enCasilla(g.fx.cell, 'martillo');
+        anillo(casilla, '#F4EFE4', 1.8);
         flotanteEn(casilla, 'Martillo', PALETA.martillo[0]);
       } else {
         const v = BONE[g.fx.item].val, raro = v>=6;
         son(raro ? 'raro' : 'extraer');
-        enCasilla(g.fx.cell, 'extraer', {n: 16 + v*3, vel: 3.4 + v*0.22});
+        destella(casilla, PALETA.hueso[raro?1:0], raro);
+        if(raro) anillo(casilla, PALETA.hueso[2], 2.6);
         flotanteEn(casilla, BONE[g.fx.item].es+' '+v, PALETA.hueso[raro?2:0], raro);
         vuela(casilla, document.querySelector('[data-hud="huesos"]'),
           d=>{ d.innerHTML = svgIcono(g.fx.item, 34, PALETA.hueso[raro?1:0]); d.style.filter = 'drop-shadow(0 3px 2px rgba(0,0,0,.7))'; },
@@ -214,10 +210,7 @@ function Game({g, setG, onRestart}){
         if(nuevo && ult && cine()) encolar({k:'museo', dino:ult, pv:d, jugador:q});
         else if(d>=12){
           const cE = ult ? ERA_COL[eraDe(ult)] : '#A97F3C';
-          const pal = [cE,'#F4EFE4','#CFE0E8'];
           son('esqueleto');
-          Chispas(window.innerWidth/2, window.innerHeight*0.40,
-            Object.assign({}, PERFIL.esqueleto, {col:pal.concat(q.color)}));
           Destello(tablero.current, cE);
           setBanda({texto: ult ? ult.name+' al museo' : 'Esqueleto completo',
                     color: cE, id: Date.now()});
@@ -252,7 +245,6 @@ function Game({g, setG, onRestart}){
       lastEvt.current = id;
       if(cine()) encolar({k:'evento', evento:g.lastEvent, deposito:g.poolIndex});
       else { setEvt(g.lastEvent); son('evento'); }
-      Chispas(window.innerWidth/2, window.innerHeight*0.24, PERFIL.evento);
       Destello(tablero.current, PALETA.evento[0]);
       Sacudida(tablero.current, 6);
     }

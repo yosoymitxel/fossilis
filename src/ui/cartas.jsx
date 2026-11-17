@@ -3,7 +3,7 @@ const {CHAR, BONE} = FG.data;
 const {EraIco, Emblema, eraDe, ERA_COL, buscarDino, IMG_URLS, rol, modo} = FG.ui;
 const {Bone, Hammer, Yeso, Ico} = FG.ui;
 const {Btn, Coste} = FG.ui;
-const {chispasEn, flotanteEn, PALETA} = FG.fx;
+const {flotanteEn, PALETA, rebota} = FG.fx;
 /* ============================================================
    DinoCard · retrato de campo pegado con cinta sobre la ficha,
    con el emblema del yacimiento sellado en la esquina.
@@ -90,7 +90,7 @@ function MarketCard({c, canBuy, on}){
         <p className="text-[11px] leading-snug text-hueso/75 mt-0.5">{c.d}</p>
         <div className="flex items-center justify-between gap-2 mt-2">
           <span className="text-[14px] text-cinta tracking-wide flex items-center"><Coste c={c.cost}/></span>
-          <Btn on={e=>{chispasEn(e.currentTarget,'compra'); flotanteEn(e.currentTarget, c.n, PALETA.compra[0]); on();}}
+          <Btn on={e=>{rebota(e.currentTarget.closest('.carta-fisica') || e.currentTarget, 1.05); flotanteEn(e.currentTarget, c.n, PALETA.compra[0]); on();}}
             dis={!canBuy} tone={canBuy?'p':'n'}>Comprar</Btn>
         </div>
       </div>
