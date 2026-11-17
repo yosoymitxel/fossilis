@@ -264,3 +264,11 @@ temas (Modular, Libreta, Sección) no cambia.
 - Criterio aplicado: emil-design-eng (curvas, sin escalas desde cero, salida más rápida, hover solo
   ratón), Web Interface Guidelines (foco, etiquetas, movimiento reducido) y la receta de nakasthu
   para el 3D.
+
+## Arreglos de animación (noviembre 2026)
+
+- Portada y escenas: cielo liso mientras llega el 3D; la ilustración SVG solo si el 3D falla o tarda más de 4,5 s.
+  Los modelos se empiezan a bajar al cargar el módulo y se comparten entre portada, apertura y cierre.
+- Tablero: al cambiar de tamaño (pantalla completa, giro) las losetas se recolocan sin animarse.
+- Modales: la hoja se prepara fuera de pantalla antes del primer cuadro; el menú ya no repite su
+  entrada al abrir un modal y las palancas conservan su transición (componentes fuera del render).

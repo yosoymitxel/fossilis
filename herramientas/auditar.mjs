@@ -23,6 +23,7 @@ const definidores = {
   'src/ui/hoja.jsx': ['Hoja'],
   'src/ui/escena.jsx': ['Escena','horaDe'],
   'src/ui/diorama.jsx': ['Diorama','tieneDino3D'],
+  'src/ui/fondo.jsx': ['Fondo'],
   'src/ui/opciones.jsx': ['Opciones'],
   'src/ui/momentos.jsx': ['Momento'],
   'src/ui/portada.jsx': ['Portada'],

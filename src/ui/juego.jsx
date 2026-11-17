@@ -37,6 +37,7 @@ function Game({g, setG, onRestart}){
   const cajas = useRef(new Map());
   const montado = useRef(false);
   const vuelo = useRef(new Map());
+  const anchoTablero = useRef(null);
   const [banda,setBanda] = useState(null);
   const [vistas,setVistas] = useState([]);
   // Escenas intermedias: se muestran de una en una y los bots esperan a que acaben.
@@ -60,13 +61,15 @@ function Game({g, setG, onRestart}){
   useLayoutEffect(()=>{
     const cont = tablero.current; if(!cont) return;
     const vistos = new Set();
+    const ancho = cont.offsetWidth+'x'+cont.offsetHeight, redimensionado = anchoTablero.current!==null && anchoTablero.current!==ancho;
+    anchoTablero.current = ancho;
     cont.querySelectorAll('[data-tile],[data-peon]').forEach(el=>{
       const k = el.dataset.tile ? 't'+el.dataset.tile : 'p'+el.dataset.peon;
       vistos.add(k);
       const s = sitio(el);
       const ant = cajas.current.get(k);
       cajas.current.set(k, s);
-      if(suave || !el.animate) return;
+      if(suave || !el.animate || redimensionado) return;
       if(ant){
         const dx = ant.x-s.x, dy = ant.y-s.y;
         if(Math.abs(dx)<1 && Math.abs(dy)<1) return;
@@ -84,6 +87,18 @@ function Game({g, setG, onRestart}){
     for(const k of [...cajas.current.keys()]) if(!vistos.has(k)){ cajas.current.delete(k); vuelo.current.delete(k); }
     montado.current = true;
   });
+
+  // Al cambiar el tamaño (pantalla completa, giro) se apuntan los sitios nuevos sin animar nada.
+  useEffect(()=>{
+    const cont = tablero.current; if(!cont || typeof ResizeObserver==='undefined') return;
+    const ro = new ResizeObserver(()=>{
+      anchoTablero.current = cont.offsetWidth+'x'+cont.offsetHeight;
+      cont.querySelectorAll('[data-tile],[data-peon]').forEach(el=>
+        cajas.current.set(el.dataset.tile ? 't'+el.dataset.tile : 'p'+el.dataset.peon, sitio(el)));
+    });
+    ro.observe(cont);
+    return ()=>ro.disconnect();
+  },[]);
 
   useEffect(()=>{
     if(!g.fx || !tablero.current) return;

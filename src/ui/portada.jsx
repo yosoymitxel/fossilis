@@ -1,7 +1,7 @@
 // Fossilis · portada: la ilustración del yacimiento y el menú principal.
 const {useState} = React;
 const {son, useTema, salaDe, ambiente} = FG.fx;
-const {Escena, Diorama, horaDe, Hoja, Opciones, Ico, Ic, Yeso, Peon} = FG.ui;
+const {Fondo, horaDe, Hoja, Opciones, Ico, Ic, Yeso, Peon} = FG.ui;
 
 const PASOS_JUEGO = [
   ['turno',  'Tu turno',     'Empiezas con 4 de energía. Coger yeso, moverte, cavar, extraer y echar arena la gastan.'],
@@ -12,22 +12,22 @@ const PASOS_JUEGO = [
   ['pista',  'Eventos y final','Al vaciarse el depósito de yeso salta un evento. Cuatro vaciados y llega la última ronda. Gana quien sume más PV.'],
 ];
 
+const Item = ({ico, titulo, nota, on, principal}) => (
+  <button onClick={on} className={'menu-btn entra'+(principal?' principal':'')}>
+    <span className="ico">{ico}</span>
+    <span className="min-w-0"><span className="disp font-extrabold text-[16px] leading-tight block">{titulo}</span>
+      {nota && <small className="truncate">{nota}</small>}</span>
+  </button>);
+
 function Portada({guardada, onContinuar, onNueva}){
   const [tema] = useTema();
   const [hoja,setHoja] = useState(null);
   const hora = horaDe(tema);
   const abrir = k => { son('ui'); setHoja(k); };
-  const Item = ({ico, titulo, nota, on, principal}) => (
-    <button onClick={on} className={'menu-btn entra'+(principal?' principal':'')}>
-      <span className="ico">{ico}</span>
-      <span className="min-w-0"><span className="disp font-extrabold text-[16px] leading-tight block">{titulo}</span>
-        {nota && <small className="truncate">{nota}</small>}</span>
-    </button>);
   const act = guardada && guardada.players[guardada.turn];
   return (
     <div data-sala={salaDe('vitrina', tema)} data-hora={hora} className="portada pantalla">
-      <Escena pantalla hora={hora} paralaje/>
-      <Diorama hora={hora}/>
+      <Fondo hora={hora} paralaje/>
       <div className="portada-sombra"/>
       <div className="relative z-10 flex-1 flex flex-col w-full max-w-[1100px] mx-auto px-5 lg:px-10 pt-[9svh] pb-5">
         <header>

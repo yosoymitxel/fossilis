@@ -13,6 +13,13 @@
 .mo-vitrina .mo-silueta{transition:opacity .5s ease}
 .mo-vitrina:has(.diorama.listo) .mo-silueta{opacity:0}
 
+/* ---- Fondo: cielo liso mientras llega el 3D; la ilustración solo si no llega ------- */
+.fondo-cielo{position:absolute;inset:0;background:#0d1426;transition:opacity .6s ease}
+.fondo-cielo[data-hora="ocaso"]{background:#7a3f36}
+.fondo-cielo[data-hora="alba"]{background:#d9e6e6}
+.fondo-cielo.fuera{opacity:0}
+.fondo-svg{position:absolute;inset:0;animation:mo-aparece .6s ease both}
+
 /* ---- La ilustración --------------------------------------------------------- */
 .escena-il{position:absolute;inset:0;width:100%;height:100%;display:block;--px:0;--py:0}
 .il-capa{transform:translate(calc(var(--px) * var(--k) * -1px),calc(var(--py) * var(--k) * -.4px));transition:transform .5s var(--sale)}

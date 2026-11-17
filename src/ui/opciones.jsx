@@ -3,6 +3,17 @@ const {useState, useEffect} = React;
 const {AJUSTES, guardarAjustes, irPantallaCompleta, son, syncAnim, useTema, volumen, ambiente} = FG.fx;
 const {Ico, Temas, NOTA_TEMA} = FG.ui;
 const RITMOS = [['lento','Pausado'],['normal','Normal'],['rapido','Rápido']];
+const Grupo = ({titulo, children}) => (
+  <section className="rounded-xl border border-borde p-3">
+    <h4 className="rotulo text-[11px] text-tenue mb-1">{titulo}</h4>{children}</section>);
+const Palanca = ({on, titulo, nota, dis, cambiar}) => (
+  <button type="button" role="switch" aria-checked={!!on} disabled={dis} onClick={cambiar}
+    className="w-full flex items-center gap-3 py-2 min-h-11 text-left disabled:opacity-40">
+    <span className="flex-1 min-w-0">
+      <span className="disp font-bold text-[14px] block">{titulo}</span>
+      <span className="text-[12px] text-tenue leading-snug block">{nota}</span></span>
+    <span className="palanca" aria-hidden="true"/>
+  </button>);
 function Opciones(){
   const [tema] = useTema();
   const [aj,setAj] = useState({...AJUSTES});
@@ -24,21 +35,10 @@ function Opciones(){
   const alternar = () => document.fullscreenElement
     ? (document.exitFullscreen && document.exitFullscreen()) : irPantallaCompleta();
 
-  const Grupo = ({titulo, children}) => (
-    <section className="rounded-xl border border-borde p-3">
-      <h4 className="rotulo text-[11px] text-tenue mb-1">{titulo}</h4>{children}</section>);
-  const Palanca = ({k, titulo, nota, dis}) => (
-    <button type="button" role="switch" aria-checked={!!aj[k]} disabled={dis} onClick={()=>cambiar(k, !aj[k])}
-      className="w-full flex items-center gap-3 py-2 min-h-11 text-left disabled:opacity-40">
-      <span className="flex-1 min-w-0">
-        <span className="disp font-bold text-[14px] block">{titulo}</span>
-        <span className="text-[12px] text-tenue leading-snug block">{nota}</span></span>
-      <span className="palanca" aria-hidden="true"/>
-    </button>);
   return (
     <div className="grid gap-2">
       <Grupo titulo="Sonido">
-        <Palanca k="sonido" titulo="Efectos" nota="Golpes de terreno, hallazgos y avisos de evento"/>
+        <Palanca on={aj.sonido} cambiar={()=>cambiar('sonido', !aj.sonido)} titulo="Efectos" nota="Golpes de terreno, hallazgos y avisos de evento"/>
         <label className="flex items-center gap-3 py-1">
           <span className="text-tenue shrink-0"><Ico k={aj.sonido && aj.volumen>0 ? 'sonido' : 'mudo'} s={18}/></span>
           <input type="range" min="0" max="1" step="0.05" value={aj.volumen} disabled={!aj.sonido} aria-label="Volumen"
@@ -46,11 +46,11 @@ function Opciones(){
             className="desliza disabled:opacity-40"/>
           <span className="text-[12px] text-tenue w-9 text-right tabular-nums">{Math.round(aj.volumen*100)}</span>
         </label>
-        <Palanca k="ambiente" titulo="Ambiente del campamento" nota="Viento y notas sueltas de fondo" dis={!aj.sonido}/>
+        <Palanca on={aj.ambiente} cambiar={()=>cambiar('ambiente', !aj.ambiente)} titulo="Ambiente del campamento" nota="Viento y notas sueltas de fondo" dis={!aj.sonido}/>
       </Grupo>
       <Grupo titulo="Imagen y movimiento">
-        <Palanca k="animacion" titulo="Animaciones" nota="Apágalas si el movimiento molesta o el equipo va justo"/>
-        <Palanca k="cinematicas" titulo="Escenas intermedias" nota="Apertura, eventos, hallazgos y cierre a pantalla completa"/>
+        <Palanca on={aj.animacion} cambiar={()=>cambiar('animacion', !aj.animacion)} titulo="Animaciones" nota="Apágalas si el movimiento molesta o el equipo va justo"/>
+        <Palanca on={aj.cinematicas} cambiar={()=>cambiar('cinematicas', !aj.cinematicas)} titulo="Escenas intermedias" nota="Apertura, eventos, hallazgos y cierre a pantalla completa"/>
         {soporta && <button type="button" onClick={alternar} className="w-full flex items-center gap-3 py-2 min-h-11 text-left">
           <span className="flex-1 disp font-bold text-[14px]">{full ? 'Salir de pantalla completa' : 'Pantalla completa'}</span>
           <span className="text-cinta"><Ico k={full?'salir':'pantalla'} s={19}/></span></button>}
@@ -64,7 +64,7 @@ function Opciones(){
                 (aj.ritmo===k ? 'bg-cinta sobre-acento border-cinta' : 'bg-sedimento text-hueso border-borde')}>{n}</button>)}
           </div>
         </div>
-        <Palanca k="pistas" titulo="Pistas de aprendizaje" nota="Consejos que aparecen la primera vez que algo ocurre"/>
+        <Palanca on={aj.pistas} cambiar={()=>cambiar('pistas', !aj.pistas)} titulo="Pistas de aprendizaje" nota="Consejos que aparecen la primera vez que algo ocurre"/>
       </Grupo>
       <Grupo titulo="Tema">
         <div className="mt-1.5"><Temas/></div>
