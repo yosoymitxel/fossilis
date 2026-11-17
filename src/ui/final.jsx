@@ -1,7 +1,7 @@
 const {useRef, useEffect, useState} = React;
 const {DINOS} = FG.data;
 const {ERA_COL, eraDe, Silueta, TEX, Peon} = FG.ui;
-const {MOT, useTema, salaDe, quieto, son, Chispas, PERFIL} = FG.fx;
+const {MOT, useTema, salaDe, quieto, son} = FG.fx;
 const {PASOS} = FG.core;
 /* Cuenta de 0 al total mientras crecen las barras. */
 function Cuenta({n}){
@@ -30,11 +30,8 @@ function Final({g,onRestart,onPortada}){
       {transform:['scaleX(0)','scaleX(1)']},
       {delay:m.stagger(0.09, {startDelay:.3}), duration:.9, type:'spring', bounce:.28});
   },[]);
-  useEffect(()=>{
-    const t = setTimeout(()=>{ son('esqueleto');
-      Chispas(window.innerWidth/2, window.innerHeight*.3, Object.assign({}, PERFIL.esqueleto, {col:[w.color,'#F4EFE4','#E4B054']})); }, 1300);
-    return ()=>clearTimeout(t);
-  },[]);
+  useEffect(()=>{ const t = setTimeout(()=>son('esqueleto'), 1300); return ()=>clearTimeout(t); },[]);
+
   return (
     <div data-sala={salaDe('seccion', tema)} className="pantalla min-h-[100svh] lg:h-[100svh] lg:overflow-y-auto flex items-center justify-center bg-esquisto text-hueso px-4 py-8">
       <div ref={caja} className="max-w-2xl w-full mx-auto">

@@ -1,4 +1,4 @@
-// Fossilis · efectos: paleta, partículas de canvas, flotantes y gestos.
+// Fossilis · efectos: paleta, polvo, destellos, flotantes y gestos.
 const {quieto} = FG.fx;
 const PALETA = {
   hueso:    ['#FFF3D6','#FFD98A','#E8A33D'],
@@ -14,66 +14,45 @@ const PALETA = {
 };
 const MAT_PAL = {sand:'arena', clay:'arcilla', stone:'piedra'};
 
-function Chispas(x, y, o){
-  if(quieto() || typeof document==='undefined') return;
-  const col = o.col, n = o.n || 24;
-  const cv = document.createElement('canvas');
-  cv.style.cssText = 'position:fixed;left:0;top:0;pointer-events:none;z-index:70';
-  cv.width = window.innerWidth; cv.height = window.innerHeight;
-  cv.style.width = cv.width+'px'; cv.style.height = cv.height+'px';
-  document.body.appendChild(cv);
-  const ctx = cv.getContext('2d');
-  const dir = o.dir!==undefined ? o.dir : -Math.PI/2;
-  const abre = o.abre!==undefined ? o.abre : Math.PI*2;
-  const grav = o.grav!==undefined ? o.grav : .19;
-  const [tmin,tmax] = o.tam || [2.5,6];
-  const ps = Array.from({length:n}, ()=>{
-    const ang = dir + (Math.random()-.5)*abre;
-    const v = o.vel * (0.5+Math.random()*1.0);
-    return {x, y, vx:Math.cos(ang)*v, vy:Math.sin(ang)*v, vida:1,
-            s:tmin+Math.random()*(tmax-tmin), r:Math.random()*6,
-            vr:(Math.random()-.5)*(o.giro||.4),
-            c:col[Math.floor(Math.random()*col.length)]};
-  });
-  const fin = o.dura || .017;
-  let t0 = null;
-  const paso = t => {
-    if(t0===null) t0 = t;
-    const dt = Math.min((t-t0)/16.67, 3); t0 = t;
-    ctx.clearRect(0,0,cv.width,cv.height);
-    let vivos = 0;
-    for(const q of ps){
-      if(q.vida<=0) continue;
-      vivos++;
-      q.vy += grav*dt; q.x += q.vx*dt; q.y += q.vy*dt;
-      q.vx *= (o.roce || .99); q.r += q.vr*dt; q.vida -= fin*dt;
-      ctx.save(); ctx.globalAlpha = Math.max(q.vida,0);
-      ctx.translate(q.x,q.y); ctx.rotate(q.r); ctx.fillStyle = q.c;
-      if(o.forma==='redonda'){ ctx.beginPath(); ctx.arc(0,0,q.s/2,0,6.284); ctx.fill(); }
-      else ctx.fillRect(-q.s/2, -q.s/2, q.s, q.s*(o.forma==='lasca'?2.2:1.6));
-      ctx.restore();
-    }
-    if(vivos) requestAnimationFrame(paso); else cv.remove();
-  };
-  requestAnimationFrame(paso);
-}
-
-const PERFIL = {
-  mover:  {col:['#FFFFFF'],      n:7,  vel:1.2, grav:.30, tam:[2,3],   forma:'redonda', dura:.045},
-  arena:  {col:PALETA.arena,     n:11, vel:1.0, grav:.42, tam:[1.8,3], forma:'redonda',
-           dir:Math.PI/2, abre:1.0, dura:.026},
-  subir:  {col:['#FFFFFF'],      n:9,  vel:2.2, grav:.20, tam:[2,3.5],
-           dir:-Math.PI/2, abre:0.9, dura:.03},
-  yeso:   {col:PALETA.yeso,      n:16, vel:1.6, grav:.06, tam:[3,5],   forma:'redonda', dura:.015, giro:.15},
-  cavar:  {col:PALETA.caida,     n:24, vel:3.6, grav:.38, tam:[2,5],   forma:'lasca',   giro:.7},
-  extraer:{col:PALETA.hueso,     n:30, vel:4.4, grav:.22, tam:[2.5,6], forma:'lasca',
-           dir:-Math.PI/2, abre:1.5, giro:.5},
-  martillo:{col:PALETA.martillo, n:30, vel:3.6, grav:.26, tam:[2,5],   forma:'lasca',   giro:.8},
-  compra: {col:PALETA.compra,    n:26, vel:2.0, grav:-.03, tam:[2,4],  forma:'redonda', dura:.012},
-  habilidad:{col:PALETA.habilidad,n:26, vel:2.4, grav:.05, tam:[2,4],  forma:'redonda', dura:.014},
-  evento: {col:PALETA.evento,    n:54, vel:4.6, grav:.30, tam:[2.5,6], forma:'lasca',   giro:.9},
-  esqueleto:{col:PALETA.hueso,   n:120,vel:5.6, grav:.24, tam:[3,8],   forma:'lasca',   giro:.7, dura:.011},
+/* Cada gesto tiene su reacción, ninguna es confeti:
+   polvo   · nube del material que se levanta y se disipa (cavar)
+   destella· estrella de 4 puntas que crece y se apaga (hueso)
+   anillo  · onda que se abre desde la pieza (martillo, hueso raro, habilidad) */
+const capa = (x, y, lado, css) => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:'+(x-lado/2)+'px;top:'+(y-lado/2)+'px;width:'+lado+'px;height:'+lado+'px;'+
+    'pointer-events:none;z-index:70;will-change:transform,opacity;'+css;
+  document.body.appendChild(d);
+  return d;
 };
+const centro = el => { const r = el.getBoundingClientRect(); return [r.left+r.width/2, r.top+r.height/2, Math.min(r.width,r.height)]; };
+function polvo(el, color, dir){
+  if(!el || quieto() || typeof document==='undefined') return;
+  const [x,y,t] = centro(el), [vx,vy] = dir || [0,0];
+  for(let i=0;i<5;i++){
+    const ox = (i-2)*t*.16, d = capa(x+ox+vx*t*.3, y+t*.18+vy*t*.3, t*.7,
+      'border-radius:50%;background:radial-gradient(circle,'+color+' 0%,'+color+'00 68%)');
+    d.animate([{transform:'translate(0,0) scale(.35)', opacity:.75},
+               {transform:'translate('+(ox*.6+vx*t*.25)+'px,'+(-t*.32-i%2*6)+'px) scale(1.5)', opacity:0}],
+      {duration:620+i*70, delay:i*25, easing:'cubic-bezier(.23,1,.32,1)', fill:'backwards'}).finished.then(()=>d.remove(), ()=>d.remove());
+  }
+}
+function destella(el, color, grande){
+  if(!el || quieto() || typeof document==='undefined') return;
+  const [x,y,t] = centro(el), d = capa(x, y, t*(grande?1.5:1.1),
+    'background:'+color+';clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);'+
+    'filter:drop-shadow(0 0 6px '+color+')');
+  d.animate([{transform:'scale(.2) rotate(0deg)', opacity:1, offset:0},
+             {transform:'scale(1) rotate(30deg)', opacity:1, offset:.3},
+             {transform:'scale(0) rotate(60deg)', opacity:.6}],
+    {duration:440, easing:'cubic-bezier(.23,1,.32,1)'}).finished.then(()=>d.remove(), ()=>d.remove());
+}
+function anillo(el, color, tam){
+  if(!el || quieto() || typeof document==='undefined') return;
+  const [x,y,t] = centro(el), d = capa(x, y, t, 'border-radius:50%;border:3px solid '+color);
+  d.animate([{transform:'scale(.4)', opacity:1},{transform:'scale('+(tam||2.2)+')', opacity:0}],
+    {duration:560, easing:'cubic-bezier(.23,1,.32,1)'}).finished.then(()=>d.remove(), ()=>d.remove());
+}
 
 function Flotante(x, y, texto, color, grande){
   if(typeof document==='undefined') return;
@@ -113,12 +92,6 @@ function Destello(el, color){
     {boxShadow:'0 0 34px 7px '+color+'CC', offset:.3},
     {boxShadow:'0 0 0 0 '+color+'00'}], {duration:900, easing:'ease-out'});
 }
-function chispasEn(el, k, extra){
-  if(!el || !el.getBoundingClientRect) return;
-  const r = el.getBoundingClientRect();
-  const base = PERFIL[k] || PERFIL.cavar;
-  Chispas(r.left+r.width/2, r.top+r.height/2, Object.assign({}, base, extra||{}));
-}
 
 const GESTO = {
   cavar:  ['rotate(0deg)','rotate(-26deg) translateY(-2px)','rotate(12deg) translateY(2px)','rotate(0deg)'],
@@ -131,9 +104,9 @@ const GESTO = {
 };
 /* Vuelo al marcador: una copia sale de `desde`, sube en arco y cae encogiéndose en `hacia`,
    que rebota al recibirla. `pinta(nodo)` viste la copia (loseta, hueso, yeso). */
-function rebota(el){
+function rebota(el, k=1.3){
   if(!el || quieto() || !el.animate) return;
-  el.animate([{transform:'scale(1)'},{transform:'scale(1.3)', offset:.35},{transform:'scale(1)'}],
+  el.animate([{transform:'scale(1)'},{transform:'scale('+k+')', offset:.35},{transform:'scale(1)'}],
     {duration:340, easing:'cubic-bezier(.23,1,.32,1)'});
 }
 function vuela(desde, hacia, pinta, o={}){
@@ -165,4 +138,4 @@ function golpe(el){
   el.animate([{filter:'brightness(2.2) saturate(.4)'},{filter:'brightness(1)'}], {duration:160, easing:'ease-out'});
 }
 Object.assign(FG.fx, {rebota, vuela, golpe});
-Object.assign(FG.fx, {PALETA, MAT_PAL, Chispas, PERFIL, Flotante, flotanteEn, Sacudida, Destello, chispasEn, GESTO});
+Object.assign(FG.fx, {PALETA, MAT_PAL, polvo, destella, anillo, Flotante, flotanteEn, Sacudida, Destello, GESTO});

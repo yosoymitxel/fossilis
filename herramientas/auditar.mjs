@@ -15,7 +15,7 @@ const definidores = {
   'src/core/acciones.js': ['act','endTurn'],
   'src/core/ia.js': ['boneUtility','aiStep'],
   'src/fx/entorno.js': ['irPantallaCompleta','SUAVE','AJUSTES','guardarAjustes','RITMO','guardarPartida','partidaGuardada','quieto','MOT','MUELLE','syncAnim','TEMAS','TemaCtx','useTema','salaDe'],
-  'src/fx/fx.js': ['PALETA','MAT_PAL','Chispas','PERFIL','Flotante','flotanteEn','Sacudida','Destello','chispasEn','GESTO','rebota','vuela','golpe'],
+  'src/fx/fx.js': ['PALETA','MAT_PAL','polvo','destella','anillo','Flotante','flotanteEn','Sacudida','Destello','GESTO','rebota','vuela','golpe'],
   'src/fx/audio.js': ['audio','tono','ruido','arpegio','SON','son','volumen','ambiente'],
   'src/ui/iconos.jsx': ['ICONO','Ic','Bone','Hammer','FragIc','Yeso','TEX','TEX_URL','ICO','Ico','IcoDino'],
   'src/ui/paleo.jsx': ['buscarDino','IMG_URLS','IMG_PROM','preload','ARQ_NOMBRE','arquetipo','Silueta','ERA_COL','EraIco','eraDe','modo','rol','Emblema','HUECOS','repartir','Rayo','AvisoIco'],

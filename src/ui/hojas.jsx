@@ -4,7 +4,7 @@ const {has, bonePlaster, labCap, marketCap, totalBones, step, DIRS, ortho} = FG.
 const {ERA_COL, eraDe, Silueta} = FG.ui;
 const {Hoja, DinoCard, MarketCard, Btn, BtnEra, BtnEraSec, Peon, Frags} = FG.ui;
 const {Bone, Hammer, Yeso, Ico, IcoDino, AvisoIco} = FG.ui;
-const {chispasEn, flotanteEn, PALETA} = FG.fx;
+const {flotanteEn, PALETA, anillo} = FG.fx;
 const {Pausa} = FG.ui;
 function Hojas({g,p,col,onRestart,hoja,setHoja,run,sel,setSel,canAfford}){
   const [ham,setHam] = useState(null);
@@ -19,7 +19,7 @@ function Hojas({g,p,col,onRestart,hoja,setHoja,run,sel,setSel,canAfford}){
       <Hoja title="Elige una habilidad" sub="Devuelves el martillo y te enseñan un truco" onClose={cerrar}>
         <div className="grid gap-2">
           {g.skillRow.map((s,i)=>
-            <button key={s.k} onClick={e=>{chispasEn(e.currentTarget,'habilidad'); flotanteEn(e.currentTarget, s.n, PALETA.habilidad[0]); setHam(null); run('extract',{cell:hoja.cell, item:'martillo', skillIndex:i});}}
+            <button key={s.k} onClick={e=>{anillo(e.currentTarget, PALETA.habilidad[0], 1.6); flotanteEn(e.currentTarget, s.n, PALETA.habilidad[0]); setHam(null); run('extract',{cell:hoja.cell, item:'martillo', skillIndex:i});}}
               className="carta-fisica text-left rounded-xl p-3 hover:border-cinta transition-colors active:scale-[.99] border border-borde">
               <div className="disp font-bold text-[14px] flex items-center gap-1.5">{s.n}{s.agg && <span className="text-arcilla" title="Habilidad de enfrentamiento"><AvisoIco s={12}/></span>}</div>
               <div className="text-[11px] text-tenue leading-snug mt-0.5">{s.d}</div>

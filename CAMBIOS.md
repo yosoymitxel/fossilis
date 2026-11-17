@@ -286,3 +286,10 @@ temas (Modular, Libreta, Sección) no cambia.
 - Acciones y pestañas fuera del render de la partida (antes se recreaban y cortaban su gesto).
 - Cabecera con contadores de losetas, huesos y yeso; barra inferior con icono en cada pestaña; avisos
   arriba en móvil, sin tapar los botones.
+
+## Sin confeti (noviembre 2026)
+
+- Fuera el motor de partículas común (`Chispas`). Cada gesto tiene su reacción: polvo del material al
+  cavar, destello de 4 puntas al sacar un hueso (anillo dorado si es raro), anillo metálico con el
+  martillo, anillo turquesa en una habilidad y rebote de la carta al comprar. Los botones de acción,
+  los eventos, el esqueleto completo y el final ya no lanzan partículas: los cuentan sus escenas.
