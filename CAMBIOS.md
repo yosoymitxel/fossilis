@@ -303,3 +303,12 @@ temas (Modular, Libreta, Sección) no cambia.
   tajo y las losetas caen en su sitio en diagonal. Al continuar una partida, la cámara desciende igual.
 - La cámara se coloca midiendo la rejilla (tamaño y centro) y se reajusta al cambiar el tamaño; ya
   posada pinta un cuadro cada 100 ms. Sin 3D, o en los temas claros, queda el tablero de siempre.
+
+## Encaje exacto y losetas con cuerpo (noviembre 2026)
+
+- La cámara 3D repite la proyección CSS del tablero: lee la `perspective` y su punto de fuga en
+  `.escena`, el `rotateX` y su eje en el marco, y la caja de maqueta de la rejilla, y se coloca donde está
+  el ojo de esa perspectiva. Esquinas del tajo y de la rejilla a 1–4 px; el cordel va a ras de suelo,
+  por las juntas.
+- Losetas con canto del mismo material en sombra (dos vetas, como un estrato) y más altura; las pilas
+  de dos enseñan la junta y el material de la de abajo. El foso, más hondo.

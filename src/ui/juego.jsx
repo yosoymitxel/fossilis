@@ -94,11 +94,25 @@ function Game({g, setG, onRestart}){
   const raiz = useRef(null), rejilla = useRef(null), encuadre = useRef(null);
   const [montaje,setMontaje] = useState(desde ? 'oculto' : 'listo');
   useEffect(()=>{
-    const r = raiz.current, j = rejilla.current; if(!r || !j || typeof ResizeObserver==='undefined') return;
-    const medir = () => { const a = r.getBoundingClientRect(), b = j.getBoundingClientRect();
-      encuadre.current = {cx:b.left-a.left+b.width/2, cy:b.top-a.top+b.height/2, lado:b.width}; };
+    const r = raiz.current, j = rejilla.current, esc = tablero.current;
+    if(!r || !j || !esc || typeof ResizeObserver==='undefined') return;
+    const marco = esc.querySelector('.marco-yacimiento');
+    // Posición de maqueta (sin transformaciones) respecto a la raíz, que es donde está el lienzo 3D.
+    const caja = el => { let x=0, y=0, n=el; while(n && n!==r){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
+      return {x, y, w:el.offsetWidth, h:el.offsetHeight}; };
+    const nums = v => (String(v).replace(/^[a-z0-9]*\(/i,'').match(/-?[\d.]+(e-?\d+)?/g) || []).map(Number);   // sin el nombre (matrix3d)
+    // Lo que el 3D necesita para repetir la proyección CSS: punto de fuga y perspectiva de .escena,
+    // eje y ángulo del rotateX del marco, y centro y ancho de la rejilla.
+    const medir = () => {
+      const E = caja(esc), M = caja(marco), J = caja(j), cE = getComputedStyle(esc), cM = getComputedStyle(marco);
+      const po = nums(cE.perspectiveOrigin), to = nums(cM.transformOrigin), m = nums(cM.transform);
+      const a = m.length===16 ? Math.atan2(m[6], m[5]) : 0;
+      const P = parseFloat(cE.perspective) || 1e5;
+      encuadre.current = {ex:E.x+(po[0] ?? E.w/2), ey:E.y+(po[1] ?? E.h/2), P, a,
+        ax:M.y+(to[1] ?? M.h), bx:J.x+J.w/2, by:J.y+J.h/2, S:J.w};
+    };
     medir();
-    const ro = new ResizeObserver(medir); ro.observe(r); ro.observe(j);
+    const ro = new ResizeObserver(medir); ro.observe(r); ro.observe(j); ro.observe(esc);
     return ()=>ro.disconnect();
   },[]);
   // Al terminar la apertura la cámara baja y las losetas caen en su sitio una a una.
