@@ -151,6 +151,23 @@
 .con-3d > nav{background:rgb(8 11 18 / .78) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .con-3d .carta-fisica{background:rgb(13 16 22 / .8)}
 .con-3d aside .bg-sedimento\/40,.con-3d .btn-fisico.bg-sedimento{background-color:rgb(13 16 22 / .8)}
+/* Losetas con cuerpo: el canto es el mismo material en sombra, en dos vetas (estrato); la pila de dos
+   enseña la junta y el material de la loseta de abajo. Solo en la sala oscura; las claras tienen el suyo. */
+[data-sala="vitrina"] .tile{
+  --canto:color-mix(in srgb,var(--mat) 52%,#140b05);--veta:color-mix(in srgb,var(--mat) 70%,#140b05);
+  --canto2:color-mix(in srgb,var(--mat2) 52%,#140b05);--veta2:color-mix(in srgb,var(--mat2) 70%,#140b05)}
+[data-sala="vitrina"] .tile.h1{transform:translateZ(14px);
+  box-shadow:inset 0 2px 0 rgb(255 255 255 / .3),inset 0 -3px 0 rgb(0 0 0 / .2), /* taste-skill-ignore: loseta física */
+    0 3px 0 var(--veta),0 7px 0 var(--canto),0 12px 14px -3px rgb(0 0 0 / .7)}
+[data-sala="vitrina"] .tile.h2{transform:translateZ(28px);
+  box-shadow:inset 0 2px 0 rgb(255 255 255 / .34),inset 0 -3px 0 rgb(0 0 0 / .2), /* taste-skill-ignore: pila física */
+    0 3px 0 var(--veta),0 6px 0 var(--canto),0 7px 0 rgb(0 0 0 / .55),
+    0 10px 0 var(--veta2),0 14px 0 var(--canto2),0 20px 18px -4px rgb(0 0 0 / .72)}
+[data-sala="vitrina"] .tile.h1.pickable:hover{transform:translateZ(22px)}
+[data-sala="vitrina"] .tile.h2.pickable:hover{transform:translateZ(36px)}
+[data-sala="vitrina"] .tile.pickable:active{transform:translateZ(10px)}
+[data-sala="vitrina"] .pit{box-shadow:inset 0 14px 18px rgb(0 0 0 / .95),inset 0 -2px 0 rgb(255 255 255 / .05),inset 0 0 0 1px rgb(0 0 0 / .6)} /* taste-skill-ignore: hondo del foso */
+
 /* Las losetas, bajo los focos de trabajo: un poco de calor para que casen con el foso iluminado */
 .con-3d .tile{filter:sepia(.12) saturate(1.05)}
 .con-3d .pit{background:radial-gradient(ellipse at 50% 0%,#120c08 0%,#1d140e 70%,#241a12 100%)} /* taste-skill-ignore: fondo del foso */

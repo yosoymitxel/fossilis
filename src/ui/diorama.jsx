@@ -119,14 +119,16 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado, encuadre, vuelo, 
             const m = new THREE.Mesh(new THREE.BoxGeometry(sx, h, sz), mat); m.position.set(x, y, z); scene.add(m); });
         });
         // La cuadrícula de excavación: estacas en el borde y cordel.
+        // En partida el cordel va a ras de suelo, en las juntas de las losetas; en las vistas, sobre estacas.
+        const hCordel = plano==='tablero' ? .03 : .42, hEstaca = plano==='tablero' ? .1 : .5;
         const palo = new THREE.MeshLambertMaterial({color:0xd8c9a8}), puntos = [];
         for(let i=0;i<=5;i++) for(const s of [-1,1]){
           const a = [-w/2 + i*w/5, s*d/2], b = [s*w/2, -d/2 + i*d/5];
-          for(const [x,z] of [a,b]){ const e = new THREE.Mesh(new THREE.BoxGeometry(.06,.5,.06), palo); e.position.set(x,.25,z); scene.add(e); }
+          for(const [x,z] of [a,b]){ const e = new THREE.Mesh(new THREE.BoxGeometry(.06,hEstaca,.06), palo); e.position.set(x,hEstaca/2,z); scene.add(e); }
         }
         for(let i=0;i<=5;i++){
           const x = -w/2 + i*w/5, z = -d/2 + i*d/5;
-          puntos.push(new THREE.Vector3(x,.42,-d/2), new THREE.Vector3(x,.42,d/2), new THREE.Vector3(-w/2,.42,z), new THREE.Vector3(w/2,.42,z));
+          puntos.push(new THREE.Vector3(x,hCordel,-d/2), new THREE.Vector3(x,hCordel,d/2), new THREE.Vector3(-w/2,hCordel,z), new THREE.Vector3(w/2,hCordel,z));
         }
         scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(puntos), new THREE.LineBasicMaterial({color:0xf1e7ce, transparent:true, opacity:.55})));
 
@@ -164,15 +166,26 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado, encuadre, vuelo, 
 
       const P = PLANOS[plano], quietud = quieto();
       let t0 = 0, ultimo = 0, vuelta = dino ? .7 : 2.35, lentos = 0, cuadros = 0;
-      // Pose del tablero: distancia para que el tajo mida lo que la rejilla, y desplazamiento al centro de la rejilla.
+      /* Pose del tablero: la misma proyección que hace el CSS. El plano del suelo (y=0, tajo de TAJO m) se lleva
+         al plano de la rejilla en píxeles (escala, giro del rotateX alrededor de su eje) y la cámara se pone donde
+         está el ojo de la perspectiva CSS, deshaciendo esa transformación. Así la cuadrícula cae sobre las losetas. */
       const poseTablero = (W, H) => {
         const e = vivo.current.encuadre && vivo.current.encuadre.current;
-        const lado = e && e.lado > 40 ? e.lado : Math.min(W, H)*.7;
-        // 1.08: el tajo se ve un pelo menor que la caja de la rejilla, que incluye el borde ancho de su inclinación
-        const D = TAJO[0]*1.08*H / (2*Math.tan(camera.fov*Math.PI/360)*lado);
-        return {pos:[0, D*Math.sin(ELEVA), D*Math.cos(ELEVA)], mira:[0,0,0],
-                ox: e ? W/2 - e.cx : 0, oy: e ? H/2 - e.cy : 0};
+        if(!e || !e.S){
+          const D = 14;
+          return {pos:[0, D*Math.sin(ELEVA), D*Math.cos(ELEVA)], mira:[0,0,0], up:[0,1,0], fov:40, ox:0, oy:0};
+        }
+        const s = e.S/TAJO[0];
+        const L = new THREE.Matrix4().set(s,0,0,e.bx, 0,0,-s,-e.by, 0,s,0,0, 0,0,0,1);
+        const R = new THREE.Matrix4().makeTranslation(0,-e.ax,0)
+          .multiply(new THREE.Matrix4().makeRotationX(-e.a)).multiply(new THREE.Matrix4().makeTranslation(0,e.ax,0));
+        const Mi = R.multiply(L).invert();
+        const pos = new THREE.Vector3(e.ex, -e.ey, e.P).applyMatrix4(Mi);
+        const fwd = new THREE.Vector3(0,0,-1).transformDirection(Mi), up = new THREE.Vector3(0,1,0).transformDirection(Mi);
+        return {pos:pos.toArray(), mira:new THREE.Vector3().copy(pos).addScaledVector(fwd, 10).toArray(), up:up.toArray(),
+                fov:2*Math.atan(H/2/e.P)*180/Math.PI, ox:W/2-e.ex, oy:H/2-e.ey};
       };
+      const mezcla = (a, b, k) => a.map((v,i)=>v+(b[i]-v)*k);
       const AP = PLANOS.apertura;
       let tVuelo = 0, salida = null;
       const cuadro = t => {
@@ -187,20 +200,23 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado, encuadre, vuelo, 
         if(plano==='tablero'){
           const r = canvas.getBoundingClientRect(), W = r.width, H = r.height, T = poseTablero(W, H);
           const enApertura = desde==='apertura' && !vivo.current.vuelo;
-          let pos, mira, k = 1;
+          let pos, mira, up = [0,1,0], fov = 40, k = 1;
           if(enApertura){
             const ka = quietud ? 1 : Math.min(1, (t-t0)/(AP.dura*1000)), ea = 1-Math.pow(1-ka, 3);
             pos = AP.de.map((v,i)=>(v+(AP.a[i]-v)*ea)*z*1.25); mira = AP.mira; k = 0;
-            salida = {pos, mira};
+            salida = {pos, mira, up, fov};
           } else {
-            if(!tVuelo){ tVuelo = t; if(!salida) salida = {pos:T.pos.map(v=>v*1.6), mira:T.mira}; }
+            if(!tVuelo){ tVuelo = t;
+              if(!salida) salida = {pos:mezcla(T.mira, T.pos, 1.7), mira:T.mira, up:T.up, fov:T.fov}; }
             k = quietud ? 1 : Math.min(1, (t-tVuelo)/1700);
             const e = k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2, 3)/2;
-            pos = salida.pos.map((v,i)=>v+(T.pos[i]-v)*e);
-            mira = salida.mira.map((v,i)=>v+(T.mira[i]-v)*e);
+            pos = mezcla(salida.pos, T.pos, e); mira = mezcla(salida.mira, T.mira, e);
+            up = mezcla(salida.up, T.up, e); fov = salida.fov+(T.fov-salida.fov)*e;
             k = e;
           }
+          camera.up.set(up[0], up[1], up[2]);
           camera.position.set(pos[0], pos[1], pos[2]); camera.lookAt(mira[0], mira[1], mira[2]);
+          if(camera.fov!==fov){ camera.fov = fov; camera.updateProjectionMatrix(); }
           if(k>0) camera.setViewOffset(W, H, T.ox*k, T.oy*k, W, H); else camera.clearViewOffset();
         } else if(P && !dino){
           const k = quietud ? 1 : Math.min(1, (t-t0)/(P.dura*1000)), e = 1-Math.pow(1-k, 3);

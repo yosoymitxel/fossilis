@@ -18,7 +18,7 @@ function Cell({g, i, hi, dim, onClick, arrows, onArrow}){
           onKeyDown={e=>{if(onClick&&(e.key==='Enter'||e.key===' ')){e.preventDefault();onClick();}}}
           data-tile={open?undefined:top.id}
           className={(open?'pit':'tile '+(stack.length===2?'h2':'h1'))+' relative w-full h-full '+(onClick?'pickable ':'')+(hi?'pulso ':'')}
-          style={Object.assign({}, open?{}:{background:MAT[top.mat].bg, color:MAT[top.mat].fg},
+          style={Object.assign({}, open?{}:{background:MAT[top.mat].bg, color:MAT[top.mat].fg, '--mat':MAT[top.mat].bg, '--mat2':MAT[stack[0].mat].bg},
             hi?{outline:'2.5px solid rgb(var(--acento))', outlineOffset:'1px'}:{})}>
           {!open && <svg className="absolute inset-0 w-full h-full pointer-events-none">
             <rect width="100%" height="100%" fill={TEX_URL[top.mat]}/>
