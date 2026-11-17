@@ -1,0 +1,162 @@
+/* ============================================================================
+   Fossilis · escena, portada y momentos (cinemáticas intermedias)
+   La ilustración tiene paleta propia por hora; el resto bebe de los tokens de sala.
+   ========================================================================== */
+
+/* Curvas de casa: salida fuerte para lo que entra, entrada-salida para lo que se mueve en pantalla. */
+:root{--sale:cubic-bezier(.23,1,.32,1);--mueve:cubic-bezier(.77,0,.175,1)}
+
+/* ---- El diorama 3D: encima de la ilustración, aparece cuando ya pinta ------------- */
+.diorama{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .9s ease}
+.diorama.listo{opacity:1}
+.mo-vitrina{position:relative;width:100%;height:min(38svh,320px);display:grid;place-items:center}
+.mo-vitrina .mo-silueta{transition:opacity .5s ease}
+.mo-vitrina:has(.diorama.listo) .mo-silueta{opacity:0}
+
+/* ---- La ilustración --------------------------------------------------------- */
+.escena-il{position:absolute;inset:0;width:100%;height:100%;display:block;--px:0;--py:0}
+.il-capa{transform:translate(calc(var(--px) * var(--k) * -1px),calc(var(--py) * var(--k) * -.4px));transition:transform .5s var(--sale)}
+@keyframes il-titila{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes il-farol{0%,100%{opacity:.85}40%{opacity:1}55%{opacity:.7}70%{opacity:.95}}
+@keyframes il-mota{0%{transform:translate(0,0);opacity:0}15%{opacity:.5}100%{transform:translate(14px,-120px);opacity:0}}
+@keyframes il-bandera{0%,100%{transform:skewY(0)}50%{transform:skewY(-9deg)}}
+@keyframes il-roca{0%{transform:translateY(0) rotate(0)}70%{transform:translateY(196px) rotate(150deg)}82%{transform:translateY(184px) rotate(170deg)}100%{transform:translateY(196px) rotate(190deg)}}
+@keyframes il-racha{0%{transform:translateX(0);opacity:0}20%{opacity:.75}100%{transform:translateX(520px);opacity:0}}
+@keyframes il-camion{0%{transform:translateX(-70px)}70%{transform:translateX(168px)}80%{transform:translateX(162px)}100%{transform:translateX(165px)}}
+@keyframes il-destello{0%,100%{opacity:0}8%{opacity:.85}16%{opacity:.1}24%{opacity:.6}40%{opacity:0}}
+@keyframes il-fosil{from{opacity:0}to{opacity:1}}
+@keyframes il-espina{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.il-estrella{animation:il-titila 3.6s ease-in-out infinite}
+.il-farol{animation:il-farol 2.8s ease-in-out infinite;transform-origin:118px 150px}
+.il-motas circle{opacity:0;animation:il-mota 9s linear infinite}
+.il-bandera{animation:il-bandera 2.2s ease-in-out infinite;transform-origin:92px 117px}
+.il-roca{animation:il-roca .9s cubic-bezier(.5,0,.9,.6) both;transform-box:fill-box;transform-origin:center}
+.il-racha{animation:il-racha 1.5s ease-in infinite;opacity:0}
+.il-camion{animation:il-camion 1.7s cubic-bezier(.2,.7,.3,1) both}
+.il-destello{animation:il-destello 1.3s ease-out both;opacity:0}
+.il-fosil{opacity:.92}
+.il-fosil path,.il-fosil ellipse,.il-fosil circle{animation:il-fosil 1.2s ease-out .7s both}
+.il-fosil path[pathLength]{stroke-dasharray:1;animation:il-espina 1.5s cubic-bezier(.4,0,.2,1) both}
+
+/* ---- Entradas de pantalla ---------------------------------------------------- */
+@keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes entra-zoom{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
+.entra{animation:entra .42s var(--sale) both}
+.pantalla{animation:entra-zoom .5s var(--sale) both}
+
+/* ---- Portada ------------------------------------------------------------------ */
+.portada{position:relative;min-height:100svh;overflow:hidden;isolation:isolate;display:flex;flex-direction:column}
+.portada-sombra{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgb(0 0 0 / .34) 0,rgb(0 0 0 / 0) 34%,rgb(0 0 0 / 0) 52%,rgb(0 0 0 / .5) 100%)}
+.portada-titulo{font-weight:800;line-height:.86;letter-spacing:-.02em;color:#F4EFE4;
+  font-size:clamp(58px,17vw,128px);text-shadow:0 3px 0 rgb(0 0 0 / .35)} /* taste-skill-ignore: rótulo sobre la ilustración */
+[data-hora="alba"] .portada-titulo{color:#22262A;text-shadow:0 2px 0 rgb(255 255 255 / .45)}
+[data-hora="alba"] .portada-sombra{background:linear-gradient(180deg,rgb(255 255 255 / .2) 0,rgb(0 0 0 / 0) 40%,rgb(0 0 0 / .42) 100%)}
+.portada-lema{color:#F4EFE4}
+[data-hora="alba"] .portada-lema{color:#22262A}
+.menu-btn{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:10px 16px;border-radius:14px;text-align:left;
+  background:rgb(13 15 16 / .78);color:#F4EFE4;border:1.5px solid rgb(244 239 228 / .2);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:transform .16s var(--sale),background-color .16s,border-color .16s}
+@media (hover:hover) and (pointer:fine){
+  .menu-btn:hover{background:rgb(13 15 16 / .92);border-color:rgb(244 239 228 / .5);transform:translateX(4px)}
+  .menu-btn.principal:hover{background:#FFFFFF}
+}
+.menu-btn:active{transform:scale(.97)}
+.menu-btn.principal{background:#F4EFE4;color:#14161A;border-color:#F4EFE4;box-shadow:0 4px 0 rgb(0 0 0 / .45)} /* taste-skill-ignore: botón físico */
+.menu-btn small{display:block;font-size:12px;font-weight:400;opacity:.7;margin-top:1px}
+.menu-btn .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;background:rgb(244 239 228 / .12)}
+.menu-btn.principal .ico{background:rgb(20 22 26 / .1)}
+
+/* ---- Deslizadores y segmentos de opciones -------------------------------------- */
+.desliza{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;cursor:pointer}
+.desliza::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:rgb(var(--borde))}
+.desliza::-moz-range-track{height:6px;border-radius:3px;background:rgb(var(--borde))}
+.desliza::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;margin-top:-8px;
+  background:rgb(var(--acento));border:2px solid rgb(var(--fondo));box-shadow:0 2px 0 rgb(0 0 0 / .4)} /* taste-skill-ignore */
+.desliza::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:rgb(var(--acento));border:2px solid rgb(var(--fondo))}
+.palanca{position:relative;width:46px;height:28px;border-radius:14px;background:rgb(var(--borde));flex-shrink:0;transition:background-color .18s}
+.palanca::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:rgb(var(--tinta));transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+[data-sala="modular"] .palanca,[data-sala="libreta"] .palanca,[data-sala="seccion"] .palanca{background:rgb(var(--tenue) / .5)}
+[data-sala="modular"] .palanca::after,[data-sala="libreta"] .palanca::after,[data-sala="seccion"] .palanca::after{background:rgb(var(--superficie))}
+[aria-checked="true"] > .palanca.palanca{background:rgb(var(--acento))}
+[aria-checked="true"] > .palanca.palanca::after{transform:translateX(18px);background:var(--sobre-acento)}
+
+/* ---- Momentos ------------------------------------------------------------------ */
+@keyframes mo-velo{from{opacity:0}to{opacity:1}}
+@keyframes mo-sale{to{opacity:0}}
+@keyframes mo-barra-a{from{transform:translateY(-100%)}to{transform:none}}
+@keyframes mo-barra-b{from{transform:translateY(100%)}to{transform:none}}
+@keyframes mo-sube{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes mo-sello{0%{opacity:0;transform:scale(2.1) rotate(-9deg)}55%{opacity:1;transform:scale(.94) rotate(-3deg)}75%{transform:scale(1.04) rotate(-3deg)}100%{opacity:1;transform:scale(1) rotate(-3deg)}}
+@keyframes mo-pop{0%{opacity:0;transform:scale(.9)}70%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes mo-revela{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes mo-aparece{from{opacity:0}to{opacity:1}}
+@keyframes mo-gira{to{transform:rotate(360deg)}}
+@keyframes mo-tiembla{0%,100%{transform:translate(0,0)}15%{transform:translate(-7px,3px)}30%{transform:translate(6px,-4px)}45%{transform:translate(-5px,-2px)}60%{transform:translate(4px,3px)}80%{transform:translate(-2px,1px)}}
+@keyframes mo-tiempo{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes mo-zoom{from{transform:scale(1.14)}to{transform:scale(1)}}
+.momento{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:#07090B;color:#F4EFE4;animation:mo-velo .28s ease-out both}
+.momento.sale{animation:mo-sale .2s ease-out both;pointer-events:none}
+.momento.claro{background:rgb(7 9 11 / .92)}
+.mo-fondo{position:absolute;inset:0;animation:mo-zoom 3.4s cubic-bezier(.2,.6,.2,1) both}
+.mo-fondo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgb(7 9 11 / .5),rgb(7 9 11 / .62) 45%,rgb(7 9 11 / .5) 62%,rgb(7 9 11 / .2))}
+.mo-barra{position:absolute;left:0;right:0;height:9svh;background:#07090B;z-index:2}
+.mo-barra.a{top:0;animation:mo-barra-a .5s var(--sale) both}
+.mo-barra.b{bottom:0;animation:mo-barra-b .5s var(--sale) both}
+.mo-cuerpo{position:relative;z-index:3;width:100%;max-width:560px;padding:0 20px;text-align:center}
+.mo-cuerpo > *{animation:mo-sube .5s var(--sale) both}
+.mo-cuerpo > :nth-child(2){animation-delay:.06s}
+.mo-cuerpo > :nth-child(3){animation-delay:.13s}
+.mo-cuerpo > :nth-child(4){animation-delay:.19s}
+.mo-cuerpo > :nth-child(5){animation-delay:.26s}
+.mo-rotulo{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgb(244 239 228 / .72)}
+.mo-titulo{font-weight:800;line-height:.98;font-size:clamp(34px,9.5vw,64px);margin-top:8px;text-wrap:balance}
+.mo-cuerpo > .mo-sello{display:inline-block;padding:6px 16px 7px;border:3px solid currentColor;border-radius:8px;
+  animation:mo-sello .55s cubic-bezier(.3,.9,.3,1) .1s both}
+.mo-pop{animation:mo-pop .5s cubic-bezier(.3,1.4,.4,1) both}
+.mo-vineta{position:relative;width:100%;aspect-ratio:16/9;max-height:34svh;border-radius:14px;overflow:hidden;margin:0 auto;
+  border:1.5px solid rgb(244 239 228 / .28);box-shadow:0 14px 30px -12px #000}
+.mo-vineta.tiembla{animation:mo-tiembla .7s ease-out .15s both}
+.mo-emblema{position:absolute;right:10px;bottom:10px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  background:#F4EFE4;color:#14161A;box-shadow:0 3px 0 rgb(0 0 0 / .5)} /* taste-skill-ignore: sello sobre la viñeta */
+.mo-rayos{position:absolute;left:50%;top:50%;width:120vmax;height:120vmax;margin:-60vmax 0 0 -60vmax;opacity:.13;will-change:transform;
+  background:repeating-conic-gradient(from 0deg,var(--c) 0 6deg,transparent 6deg 18deg);animation:mo-gira 40s linear infinite}
+.mo-silueta{display:inline-block;animation:mo-revela 1s var(--mueve) .15s both}
+.mo-tiempo{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgb(244 239 228 / .7);transform-origin:left;z-index:4;
+  animation:mo-tiempo linear both}
+.mo-salta{position:absolute;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:4;font-size:12px;color:rgb(244 239 228 / .6)}
+.mo-boton{min-height:48px;padding:0 26px;border-radius:12px;background:#F4EFE4;color:#14161A;font-weight:800;font-size:15px;
+  box-shadow:0 4px 0 rgb(0 0 0 / .5);transition:transform .14s} /* taste-skill-ignore: botón físico */
+.mo-boton:active{transform:translateY(2px) scale(.97)}
+
+/* ---- Fases del turno ----------------------------------------------------------- */
+.fases{display:inline-flex;align-items:center;gap:4px}
+.fases i{font-style:normal;font-size:11px;line-height:1;padding:3px 7px;border-radius:999px;color:rgb(var(--tenue));
+  border:1px solid rgb(var(--borde));transition:background-color .25s,color .25s,border-color .25s}
+.fases i.on{background:rgb(var(--acento));color:var(--sobre-acento);border-color:rgb(var(--acento));font-weight:700}
+.fases i.hecha{opacity:.55}
+
+/* ---- Final ---------------------------------------------------------------------- */
+@keyframes corona{0%{transform:translateY(-18px) scale(.9);opacity:0}70%{transform:translateY(2px) scale(1.15);opacity:1}100%{transform:none;opacity:1}}
+.corona{animation:corona .7s cubic-bezier(.3,1.4,.4,1) .5s both}
+
+/* ---- Corte de movimiento --------------------------------------------------------- */
+/* Menos movimiento no es cero: se quitan desplazamientos y bucles, se conservan los fundidos. */
+@media (prefers-reduced-motion: reduce){
+  .il-estrella,.il-farol,.il-motas circle,.il-bandera,.il-roca,.il-racha,.il-camion,.il-destello,.il-fosil *,
+  .mo-fondo,.mo-barra,.mo-vineta,.mo-rayos{animation:none !important}
+  .entra,.pantalla,.mo-cuerpo > *,.mo-pop,.mo-silueta,.corona{animation:mo-aparece .2s ease both !important}
+  .il-capa,.menu-btn{transition:none}
+  .il-camion{transform:translateX(165px)} .il-roca{transform:translateY(196px)}
+}
+html[data-anim="off"] .il-estrella,html[data-anim="off"] .il-farol,html[data-anim="off"] .il-motas circle,
+html[data-anim="off"] .il-bandera,html[data-anim="off"] .il-roca,html[data-anim="off"] .il-racha,
+html[data-anim="off"] .il-camion,html[data-anim="off"] .il-destello,html[data-anim="off"] .il-fosil *,
+html[data-anim="off"] .mo-fondo,html[data-anim="off"] .mo-barra,html[data-anim="off"] .mo-vineta,html[data-anim="off"] .mo-rayos{animation:none !important}
+html[data-anim="off"] .entra,html[data-anim="off"] .pantalla,html[data-anim="off"] .mo-cuerpo > *,html[data-anim="off"] .mo-pop,
+html[data-anim="off"] .mo-silueta,html[data-anim="off"] .corona{animation:mo-aparece .2s ease both !important}
+html[data-anim="off"] .il-camion{transform:translateX(165px)}
+html[data-anim="off"] .il-roca{transform:translateY(196px)}

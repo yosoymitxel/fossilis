@@ -249,3 +249,18 @@ Gabinete dejó de ser el reparto de cuatro salas y pasó a ser una sola sala osc
 el mismo mundo. `salaDe` devuelve `vitrina` para `gabinete`, el arranque usa
 `data-sala="vitrina"` y la ficha de Gabinete muestra un solo color. El resto de
 temas (Modular, Libreta, Sección) no cambia.
+
+## Portada, opciones y escenas intermedias (noviembre 2026)
+
+- Portada con diorama 3D (polyfork.dev: tienda, fogata, tajo con cuadrícula 5x5, costillar y cráneo) sobre
+  ilustración SVG de respaldo. Menú: continuar, nueva expedición, cómo se juega, opciones, créditos.
+- Preparación de la mesa: asientos con nombre editable, persona o bot, de 2 a 5.
+- Opciones guardadas: efectos, volumen, ambiente, animaciones, escenas, ritmo de bots, pistas, tema.
+- Partida guardada en cada jugada; se continúa desde la portada.
+- Escenas: apertura, evento con viñeta y sello, esqueleto completo (dinosaurio 3D si hay modelo),
+  relevo entre personas, última ronda, cierre. Los bots esperan a que acaben; se saltan con un toque.
+- Final: ficha del ganador, cuenta de puntos, lluvia de lascas, volver a la portada.
+- Cabecera de partida: fases del turno como tres pasos.
+- Criterio aplicado: emil-design-eng (curvas, sin escalas desde cero, salida más rápida, hover solo
+  ratón), Web Interface Guidelines (foco, etiquetas, movimiento reducido) y la receta de nakasthu
+  para el 3D.

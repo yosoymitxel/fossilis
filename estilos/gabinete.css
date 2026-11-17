@@ -213,7 +213,7 @@ body::after{
 .hoja-cerrar:hover{background:rgb(var(--borde) / .12)}
 .hoja-cerrar:active{transform:scale(.95)}
 .sello-punto{
-  width:11px;height:11px;border-radius:9999px;flex-shrink:0;display:inline-block;
+  width:11px;height:11px;border-radius:9999px;flex-shrink:0;display:inline-block;margin-right:.45em;
   box-shadow:0 0 0 1.5px rgb(var(--tinta) / .45); /* taste-skill-ignore */
 }
 

@@ -1,9 +1,22 @@
-const {useRef, useEffect} = React;
+const {useRef, useEffect, useState} = React;
 const {DINOS} = FG.data;
-const {ERA_COL, eraDe, Silueta, TEX} = FG.ui;
-const {MOT, useTema, salaDe} = FG.fx;
+const {ERA_COL, eraDe, Silueta, TEX, Peon} = FG.ui;
+const {MOT, useTema, salaDe, quieto, son, Chispas, PERFIL} = FG.fx;
 const {PASOS} = FG.core;
-function Final({g,onRestart}){
+/* Cuenta de 0 al total mientras crecen las barras. */
+function Cuenta({n}){
+  const [v,setV] = useState(quieto() ? n : 0);
+  useEffect(()=>{
+    if(quieto()) return;
+    let raf, t0 = null;
+    const paso = t => { if(t0===null) t0 = t; const k = Math.min((t-t0-300)/1100, 1);
+      setV(Math.round(n*Math.max(0, 1-Math.pow(1-k, 3)))); if(k<1) raf = requestAnimationFrame(paso); };
+    raf = requestAnimationFrame(paso);
+    return ()=>cancelAnimationFrame(raf);
+  },[n]);
+  return v;
+}
+function Final({g,onRestart,onPortada}){
   const [tema] = useTema();
   const w = g.breakdown[0];
   const max = Math.max(...g.breakdown.map(r=>r.total),1);
@@ -17,8 +30,13 @@ function Final({g,onRestart}){
       {transform:['scaleX(0)','scaleX(1)']},
       {delay:m.stagger(0.09, {startDelay:.3}), duration:.9, type:'spring', bounce:.28});
   },[]);
+  useEffect(()=>{
+    const t = setTimeout(()=>{ son('esqueleto');
+      Chispas(window.innerWidth/2, window.innerHeight*.3, Object.assign({}, PERFIL.esqueleto, {col:[w.color,'#F4EFE4','#E4B054']})); }, 1300);
+    return ()=>clearTimeout(t);
+  },[]);
   return (
-    <div data-sala={salaDe('seccion', tema)} className="min-h-[100svh] lg:h-[100svh] lg:overflow-y-auto flex items-center justify-center bg-esquisto text-hueso px-4 py-8">
+    <div data-sala={salaDe('seccion', tema)} className="pantalla min-h-[100svh] lg:h-[100svh] lg:overflow-y-auto flex items-center justify-center bg-esquisto text-hueso px-4 py-8">
       <div ref={caja} className="max-w-2xl w-full mx-auto">
         <TEX/>
         <div className="flex items-end gap-2 text-cinta/25 h-20 overflow-hidden">
@@ -27,17 +45,18 @@ function Final({g,onRestart}){
             return <span key={n} style={{color:ERA_COL[eraDe(d)], opacity:.5}}><Silueta d={d} s={64}/></span>;})}
         </div>
         <p data-e className="text-arena rotulo text-[13px] mt-4">Lámina final · se cierra el yacimiento</p>
-        <h1 data-e className="disp font-extrabold text-[38px] leading-tight mt-1">Gana {w.name}</h1>
+        <h1 data-e className="disp font-extrabold text-[38px] lg:text-[52px] leading-tight mt-1 flex items-center gap-3">
+          <span className="corona shrink-0"><Peon color={w.color} letra={w.name[0].toUpperCase()} s={52}/></span>Gana {w.name}</h1>
         <p className="text-tenue text-[13px] mt-1">{w.total} puntos y {w.dinos} dinosaurios en la colección.</p>
 
         <div className="mt-5 grid gap-2">
           {g.breakdown.map((r,i)=>(
             <div key={i} className="flex items-center gap-3">
-              <span className="w-24 text-[12px] truncate" style={{color:r.color}}><span className="sello-punto" style={{background:r.color}}/>{r.name}</span>
+              <span className="w-28 text-[13px] truncate flex items-center gap-1.5"><Peon color={r.color} letra={r.name[0].toUpperCase()} s={22}/>{r.name}</span>
               <div className="flex-1 h-6 bg-borde/10 rounded-md overflow-hidden">
                 <div data-barra className="h-full rounded-md origin-left" style={{width:(100*r.total/max)+'%', background:r.color, opacity:.9}}/>
               </div>
-              <span className="disp font-extrabold text-[15px] w-10 text-right">{r.total}</span>
+              <span className="disp font-extrabold text-[17px] w-10 text-right tabular-nums"><Cuenta n={r.total}/></span>
             </div>))}
         </div>
 
@@ -64,6 +83,8 @@ function Final({g,onRestart}){
 
         <button data-e onClick={onRestart} className="btn-fisico mt-6 w-full bg-cinta sobre-acento disp font-extrabold text-lg py-3.5 rounded-xl active:scale-[.99] transition-transform">
           Otra excavación</button>
+        <button data-e onClick={onPortada} className="mt-2 w-full min-h-11 rounded-xl border-[1.5px] border-borde text-[14px] text-hueso/80 hover:text-hueso transition-colors">
+          Volver a la portada</button>
       </div>
     </div>
   );

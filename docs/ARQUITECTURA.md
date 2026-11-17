@@ -64,6 +64,24 @@ El sistema visual vive en `estilos/gabinete.css`: tokens de las cuatro salas
 (`data-sala`), base, piezas de sistema y recetas de material marcadas. `index.html`
 lo carga antes que los módulos.
 
+## Portada, opciones y escenas (nov 2026)
+
+| Módulo | Rol |
+|---|---|
+| fx/entorno.js | además: `AJUSTES` persistentes (`fossilis.ajustes.v1`), `guardarPartida` / `partidaGuardada` (`fossilis.partida.v1`), `RITMO` de bots |
+| fx/audio.js | además: ganancia maestra (`volumen`) y `ambiente` (viento + notas) |
+| ui/escena.jsx | Ilustración SVG del campamento y el corte del terreno (respaldo sin red y viñeta de eventos) |
+| ui/diorama.jsx | Diorama three.js con modelos de polyfork.dev: orbita en portada, planos `apertura` / `cierre`, y dinosaurio en vitrina |
+| ui/opciones.jsx | Opciones compartidas por portada y pausa |
+| ui/momentos.jsx | Escenas intermedias: apertura, evento, museo, relevo, última ronda, cierre |
+| ui/portada.jsx | Menú principal: continuar, nueva expedición, cómo se juega, opciones, créditos |
+
+- `index.html` declara el import map de `three` (los módulos de polyfork lo importan por ese nombre).
+- Estilos en `estilos/escena.css`. Curvas de casa `--sale` y `--mueve`; hover solo con ratón; con
+  movimiento reducido quedan fundidos, no desplazamientos.
+- El diorama baja su resolución solo si los cuadros se atrasan, y no existe durante la partida.
+- `herramientas/partir.mjs` es histórico: regenera `src/` desde el monolito y pisaría estos módulos.
+
 ## Herramientas
 
 - `herramientas/partir.mjs`: reparte el monolito por rangos verificados y regenera `src/` e

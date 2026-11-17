@@ -25,7 +25,19 @@ if(typeof document !== 'undefined'){
 
 const SUAVE = typeof window!=='undefined' && window.matchMedia
   ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
-const AJUSTES = {animacion: !SUAVE, sonido: true};
+/* Ajustes y partida viven en localStorage; si el navegador lo niega, se juega sin memoria. */
+const CLAVE_AJUSTES = 'fossilis.ajustes.v1', CLAVE_PARTIDA = 'fossilis.partida.v1';
+const leer = k => { try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } };
+const escribir = (k,v) => { try { v===null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
+const AJUSTES = Object.assign({animacion: !SUAVE, sonido: true, volumen: .8, ambiente: true,
+  ritmo: 'normal', pistas: true, cinematicas: true, tema: 'gabinete'}, leer(CLAVE_AJUSTES) || {});
+const guardarAjustes = () => escribir(CLAVE_AJUSTES, AJUSTES);
+const RITMO = {lento: 760, normal: 430, rapido: 190};
+const guardarPartida = g => escribir(CLAVE_PARTIDA, g && !g.over ? g : null);
+const partidaGuardada = () => {
+  const g = leer(CLAVE_PARTIDA);
+  return g && Array.isArray(g.players) && Array.isArray(g.cells) && g.cells.length===25 && !g.over ? g : null;
+};
 const quieto = () => !AJUSTES.animacion;
 
 /* 'gabinete' es la sala oscura en toda la app; los otros temas son salas únicas. */
@@ -118,4 +130,4 @@ const ADAPTE = {
 };
 const MOT = () => (typeof window!=='undefined' && motorAnime() && !SUAVE && AJUSTES.animacion) ? ADAPTE : null;
 const MUELLE = {type:'spring', stiffness:320, damping:32};
-Object.assign(FG.fx, {irPantallaCompleta, SUAVE, AJUSTES, quieto, MOT, MUELLE, syncAnim, TEMAS, TemaCtx, useTema, salaDe});
+Object.assign(FG.fx, {irPantallaCompleta, SUAVE, AJUSTES, guardarAjustes, RITMO, guardarPartida, partidaGuardada, quieto, MOT, MUELLE, syncAnim, TEMAS, TemaCtx, useTema, salaDe});
