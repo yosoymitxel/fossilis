@@ -139,6 +139,27 @@
   box-shadow:0 4px 0 rgb(0 0 0 / .5);transition:transform .14s} /* taste-skill-ignore: botón físico */
 .mo-boton:active{transform:translateY(2px) scale(.97)}
 
+/* ---- El tablero dentro del yacimiento 3D ----------------------------------------
+   Paso intermedio entre la vitrina y la cinemática: las losetas siguen siendo el tablero de siempre,
+   pero el marco de latón desaparece y lo que rodea a la rejilla es el tajo 3D con sus estacas y cordel. */
+.fondo-tablero{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.con-3d .escena{background:none !important}
+.con-3d .marco-yacimiento{background:transparent;border-color:transparent;box-shadow:none}
+.con-3d .marco-yacimiento::before,.con-3d .marco-yacimiento::after,.con-3d .haz{display:none}
+.con-3d > header{background:linear-gradient(rgb(8 11 18 / .86),rgb(8 11 18 / .62)) !important;border-bottom-color:rgb(255 211 138 / .18) !important;
+  box-shadow:none !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.con-3d > nav{background:rgb(8 11 18 / .78) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.con-3d .carta-fisica{background:rgb(13 16 22 / .8)}
+.con-3d aside .bg-sedimento\/40,.con-3d .btn-fisico.bg-sedimento{background-color:rgb(13 16 22 / .8)}
+/* Las losetas, bajo los focos de trabajo: un poco de calor para que casen con el foso iluminado */
+.con-3d .tile{filter:sepia(.12) saturate(1.05)}
+.con-3d .pit{background:radial-gradient(ellipse at 50% 0%,#120c08 0%,#1d140e 70%,#241a12 100%)} /* taste-skill-ignore: fondo del foso */
+/* Mientras la cámara de la apertura baja, el tablero espera; luego las losetas caen en su sitio */
+[data-montaje="oculto"] > header,[data-montaje="oculto"] > nav,[data-montaje="oculto"] > .relative.z-10{opacity:0}
+[data-montaje="montando"] > header,[data-montaje="montando"] > nav,[data-montaje="montando"] aside{animation:entra .5s var(--sale) backwards}
+.con-3d main > p{color:#F4EFE4;text-shadow:0 1px 3px rgb(0 0 0 / .85)} /* taste-skill-ignore: texto sobre el suelo iluminado */
+.sobre3d.momento{background:radial-gradient(ellipse at 50% 55%,rgb(7 9 11 / .1),rgb(7 9 11 / .55) 75%)}
+
 /* ---- Cabecera de partida: energía, PV y contadores ------------------------------ */
 .pip{width:7px;height:16px;border-radius:2px;background:rgb(var(--acento));
   box-shadow:inset 0 1px 0 rgb(255 255 255 / .4),0 2px 0 rgb(0 0 0 / .4); /* taste-skill-ignore: ficha física */

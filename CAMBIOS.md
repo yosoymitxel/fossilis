@@ -293,3 +293,13 @@ temas (Modular, Libreta, Sección) no cambia.
   cavar, destello de 4 puntas al sacar un hueso (anillo dorado si es raro), anillo metálico con el
   martillo, anillo turquesa en una habilidad y rebote de la carta al comprar. Los botones de acción,
   los eventos, el esqueleto completo y el final ya no lanzan partículas: los cuentan sus escenas.
+
+## El tablero dentro del yacimiento 3D (noviembre 2026)
+
+- En la sala oscura, la partida se juega sobre el mismo diorama de la portada y la apertura: el tajo es
+  cuadrado y su cuadrícula enmarca la rejilla DOM; el marco de latón desaparece y lo rodean las estacas,
+  el cordel, la fogata y el campamento, de noche y con focos de trabajo sobre el tajo.
+- Continuidad: la apertura se rueda en la escena de la partida; al terminar, la cámara baja hasta el
+  tajo y las losetas caen en su sitio en diagonal. Al continuar una partida, la cámara desciende igual.
+- La cámara se coloca midiendo la rejilla (tamaño y centro) y se reajusta al cambiar el tamaño; ya
+  posada pinta un cuadro cada 100 ms. Sin 3D, o en los temas claros, queda el tablero de siempre.

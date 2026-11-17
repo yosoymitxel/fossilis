@@ -3,7 +3,7 @@ const {MAT, BONE} = FG.data;
 const {cur, has, digCost, digTargets, extractTargets, moveTargets, sandTargets, climbTargets, planDig, pasoHacia, marketCap, startEnergy, act, aiStep, totalBones, solvePayment, DIRS, reach} = FG.core;
 const {ERA_COL, eraDe} = FG.ui;
 const {Peon, Cell, Hoja, Btn, BtnJ, Banda, TEX, Ico, Ic, IcoDino, Yeso, Rayo, ICONO, Rodante, svgIcono} = FG.ui;
-const {Hojas, Pausa, Momento} = FG.ui;
+const {Hojas, Pausa, Momento, Diorama, sabe3D} = FG.ui;
 const {son, flotanteEn, Sacudida, Destello, polvo, destella, anillo, PALETA, MAT_PAL, GESTO, SUAVE, quieto, useTema, salaDe, AJUSTES, RITMO, vuela, golpe} = FG.fx;
 const PISTAS = [
   {k:'inicio',  cond:g=>true,
@@ -86,6 +86,38 @@ function Game({g, setG, onRestart}){
   const cine = () => AJUSTES.cinematicas && !quieto();
   const [cola,setCola] = useState(()=> g.log.length<=1 && !g.reanudada && cine() ? [{k:'apertura', g}] : []);
   const encolar = m => setCola(c=>c.concat(Object.assign({id:Date.now()+Math.random()}, m)));
+  // El tablero vive en el yacimiento 3D de la cinemática (solo en la sala oscura y si el 3D carga).
+  const usa3D = salaDe('vitrina', tema)==='vitrina';
+  const [con3d,setCon3d] = useState(false);
+  const desde = useRef(cola.length && cola[0].k==='apertura' ? 'apertura' : null).current;
+  const bajaCamara = !cola.length || cola[0].k!=='apertura';
+  const raiz = useRef(null), rejilla = useRef(null), encuadre = useRef(null);
+  const [montaje,setMontaje] = useState(desde ? 'oculto' : 'listo');
+  useEffect(()=>{
+    const r = raiz.current, j = rejilla.current; if(!r || !j || typeof ResizeObserver==='undefined') return;
+    const medir = () => { const a = r.getBoundingClientRect(), b = j.getBoundingClientRect();
+      encuadre.current = {cx:b.left-a.left+b.width/2, cy:b.top-a.top+b.height/2, lado:b.width}; };
+    medir();
+    const ro = new ResizeObserver(medir); ro.observe(r); ro.observe(j);
+    return ()=>ro.disconnect();
+  },[]);
+  // Al terminar la apertura la cámara baja y las losetas caen en su sitio una a una.
+  useEffect(()=>{
+    if(montaje!=='oculto' || !bajaCamara) return;
+    const t = setTimeout(()=>setMontaje('montando'), con3d ? 900 : 150);
+    return ()=>clearTimeout(t);
+  },[bajaCamara, montaje]);
+  useLayoutEffect(()=>{
+    if(montaje!=='montando') return;
+    const j = rejilla.current;
+    if(j && !quieto()) j.querySelectorAll('.celda-3d').forEach((c,i)=>{
+      const fila = Math.floor(i/5), col = i%5;
+      c.animate([{transform:'translateY(-46px) scale(1.06)', opacity:0},{transform:'translateY(0) scale(1)', opacity:1}],
+        {duration:420, delay:(fila+col)*45, easing:'cubic-bezier(.23,1,.32,1)', fill:'backwards'});
+    });
+    const t = setTimeout(()=>setMontaje('listo'), 900);
+    return ()=>clearTimeout(t);
+  },[montaje]);
   const lastScored = useRef({});
   const lastFin = useRef(g.endTrigger);
   const col = p.color;
@@ -391,8 +423,12 @@ function Game({g, setG, onRestart}){
   );
 
   return (
-    <div data-sala={salaDe('vitrina', tema)} className="pantalla min-h-[100svh] lg:h-[100svh] lg:overflow-hidden flex flex-col pb-20 lg:pb-0">
+    <div ref={raiz} data-sala={salaDe('vitrina', tema)} data-montaje={montaje}
+      className={'pantalla relative min-h-[100svh] lg:h-[100svh] lg:overflow-hidden flex flex-col pb-20 lg:pb-0'+(con3d?' con-3d':'')}>
       <TEX/>
+      {usa3D && <div className="fondo-tablero" aria-hidden="true">
+        <Diorama hora="noche" plano="tablero" encuadre={encuadre} vuelo={bajaCamara} desde={desde} onEstado={e=>setCon3d(e==='listo')}/>
+      </div>}
       <header className="shrink-0 z-30"
         style={{background:'rgb(var(--fondo) / .94)', borderBottom:'2px solid rgb(var(--acento) / .28)',
                 boxShadow:'0 4px 0 rgba(0,0,0,.35), 0 12px 22px -10px rgba(0,0,0,.7)'}}>
@@ -432,14 +468,14 @@ function Game({g, setG, onRestart}){
         </div>
       </header>
 
-      <div className="lg:flex-1 lg:min-h-0 lg:overflow-hidden">
+      <div className="relative z-10 lg:flex-1 lg:min-h-0 lg:overflow-hidden">
         <div className="h-full max-w-[1200px] mx-auto px-3 lg:px-5 lg:grid lg:grid-cols-[minmax(0,1fr)_368px] lg:gap-6 lg:pt-3 lg:items-start">
           <main className="min-w-0 lg:min-h-0">
             <div ref={tablero} className="escena relative mt-3 lg:mt-0 p-2 lg:p-3 rounded-2xl transition-colors lg:max-w-[calc(100svh-260px)] lg:mx-auto lg:w-full"
               style={{background:'radial-gradient(ellipse at 50% 20%, rgb(var(--superficie)) 0%, rgb(var(--fondo)) 72%)'}}>{/* taste-skill-ignore: charco de luz bajo la vitrina */}
               <div className="marco-yacimiento">
                 <div className="haz" aria-hidden="true"/>
-                <div className="rejilla-3d grid grid-cols-5 gap-1.5 lg:gap-2.5 select-none relative">
+                <div ref={rejilla} className="rejilla-3d grid grid-cols-5 gap-1.5 lg:gap-2.5 select-none relative">
                   {[...Array(25).keys()].map(i=>
                     <Cell key={i} g={g} i={i} hi={hi.has(i)}
                       dim={!!sel && hum && hi.size>0 && !hi.has(i)}
@@ -503,7 +539,7 @@ function Game({g, setG, onRestart}){
       </nav>
 
       {banda && !cola.length && <Banda key={banda.id} banda={banda}/>}
-      {cola.length>0 && <Momento key={cola[0].id || 'apertura'} m={cola[0]} onFin={()=>setCola(c=>c.slice(1))}/>}
+      {cola.length>0 && <Momento key={cola[0].id || 'apertura'} m={cola[0]} sobre3d={usa3D && sabe3D()===true} onFin={()=>setCola(c=>c.slice(1))}/>}
 
       {toast && <div key={toast.id} role="status" aria-live="polite" className="flota fixed left-1/2 -translate-x-1/2 top-[86px] lg:top-auto lg:bottom-6 z-40 pointer-events-none max-w-[90vw] px-3.5 py-2 rounded-full bg-hueso text-esquisto text-[12px] font-medium"
         style={{boxShadow:'0 4px 0 rgba(0,0,0,.4), 0 12px 20px -8px rgba(0,0,0,.7)'}}>{toast.t}</div>}
