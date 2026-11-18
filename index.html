@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Fossilis · versión rápida. Fuente y cargador de desarrollo en desarrollo.html; recompila con npm run build. -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -9,70 +10,26 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Fossilis · yacimiento</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400..500&family=Kalam:wght@400;700&family=Barlow+Condensed:ital,wght@0,500;0,600;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="estilos/gabinete.css">
-<link rel="stylesheet" href="estilos/escena.css">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = { theme: { extend: {
-  colors: {
-    esquisto :'rgb(var(--fondo) / <alpha-value>)',
-    sedimento:'rgb(var(--superficie) / <alpha-value>)',
-    borde    :'rgb(var(--borde) / <alpha-value>)',
-    tenue    :'rgb(var(--tenue) / <alpha-value>)',
-    hueso    :'rgb(var(--tinta) / <alpha-value>)',
-    cinta    :'rgb(var(--acento) / <alpha-value>)',
-    arena    :'rgb(var(--arena) / <alpha-value>)',
-    arcilla  :'rgb(var(--arcilla) / <alpha-value>)',
-    piedra   :'rgb(var(--piedra) / <alpha-value>)'
-  },
-  fontFamily: {
-    display:['Archivo','system-ui','sans-serif'],
-    sans:['Archivo','system-ui','sans-serif']
-  }
-}}}
+<style>
+/* Splash crítico: pinta antes de que llegue la hoja completa (duplica .carga de gabinete.css). */
+html{background:#0D0F10}
+body{margin:0;background:#0D0F10}
+.carga{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#0D0F10;color:#9DA5A4;font:13px/1.4 system-ui,sans-serif;text-align:center;padding:16px}
+.carga b{font-weight:800;font-size:34px;letter-spacing:.22em;color:#F4EFE4}
+.carga svg{fill:#CFE0E8}
+</style>
+<link rel="preload" href="juego.js" as="script">
+<link rel="stylesheet" href="estilos/app.css">
+<script type="importmap">
+{"imports": {"three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/"}}
 </script>
+<script defer src="vendor/react.js"></script>
+<script defer src="vendor/react-dom.js"></script>
+<script defer src="vendor/anime.js"></script>
+<script defer src="juego.js"></script>
 </head>
 <body class="min-h-[100svh]">
-<div id="root"><div class="carga" data-sala="vitrina"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true" fill="#CFE0E8"><g transform="rotate(-35 12 12)"><rect x="6" y="10.2" width="12" height="3.6" rx="1.8"/><circle cx="6.2" cy="9.4" r="2.6"/><circle cx="6.2" cy="14.6" r="2.6"/><circle cx="17.8" cy="9.4" r="2.6"/><circle cx="17.8" cy="14.6" r="2.6"/></g></svg><b>Fossilis</b><p>Abriendo el gabinete…</p></div></div>
-<noscript><div class="carga" data-sala="vitrina"><b>Fossilis</b><p>Necesitas activar JavaScript para jugar.</p></div></noscript>
-<!-- three.js para el diorama 3D (los modelos de polyfork.dev lo importan por este nombre) -->
-<script type="importmap">
-{"imports": {"three": "https://unpkg.com/three@0.180.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/"}}
-</script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script>
-/* Fossilis · cargador secuencial de módulos (sin build).
-   Compila cada src/* con Babel y lo ejecuta en orden de dependencias.
-   Cada módulo publica su API en FG (FG.data / FG.core / FG.fx / FG.ui). */
-(function(){
-  var MODULOS = ["src/data/fosiles.js","src/data/cartas.js","src/core/azar.js","src/core/geometria.js","src/core/partida.js","src/core/tablero.js","src/core/economia.js","src/core/eventos.js","src/core/puntuacion.js","src/core/acciones.js","src/core/ia.js","src/fx/entorno.js","src/fx/fx.js","src/fx/audio.js","src/ui/iconos.jsx","src/ui/paleo.jsx","src/ui/atomos.jsx","src/ui/hoja.jsx","src/ui/escena.jsx","src/ui/diorama.jsx","src/ui/fondo.jsx","src/ui/opciones.jsx","src/ui/momentos.jsx","src/ui/portada.jsx","src/ui/tablero.jsx","src/ui/cartas.jsx","src/ui/setup.jsx","src/ui/pausa.jsx","src/ui/final.jsx","src/ui/hojas.jsx","src/ui/juego.jsx","src/app.jsx"];
-  var OPCIONES = {presets: [[Babel.availablePresets.react, {runtime: "classic"}]], sourceType: "script"};
-  function fallo(ruta, e){
-    console.error("Fossilis · error cargando " + ruta, e);
-    var raiz = document.getElementById("root");
-    if (raiz) raiz.textContent = "No se pudo cargar " + ruta + ". Revisa la consola.";
-  }
-  (async function(){
-    window.FG = {data: {}, core: {}, fx: {}, ui: {}};
-    var t0 = performance.now();
-    for (var i = 0; i < MODULOS.length; i++) {
-      var ruta = MODULOS[i];
-      try {
-        var resp = await fetch(ruta);
-        if (!resp.ok) throw new Error("HTTP " + resp.status);
-        var codigo = Babel.transform(await resp.text(), OPCIONES).code;
-        (0, eval)(codigo);
-      } catch (e) { fallo(ruta, e); return; }
-    }
-    console.info("Fossilis · " + MODULOS.length + " módulos en " + Math.round(performance.now() - t0) + " ms");
-  })();
-})();
-</script>
+<div id="root"><div class="carga" data-sala="vitrina"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(-35 12 12)"><rect x="6" y="10.2" width="12" height="3.6" rx="1.8"/><circle cx="6.2" cy="9.4" r="2.6"/><circle cx="6.2" cy="14.6" r="2.6"/><circle cx="17.8" cy="9.4" r="2.6"/><circle cx="17.8" cy="14.6" r="2.6"/></g></svg><b>Fossilis</b><p>Abriendo el gabinete…</p></div></div>
+<noscript><div class="carga"><b>Fossilis</b><p>Necesitas activar JavaScript para jugar.</p></div></noscript>
 </body>
 </html>

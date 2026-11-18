@@ -1,18 +1,32 @@
 # Fossilis
 
 Adaptación web del juego de mesa Fossilis. Tablero 5x5 por semilla, excavación con
-empuje de losetas, fósiles, laboratorio, mercado, eventos y bots. Sin build: HTML,
-CSS y módulos JS que se cargan en el navegador.
+empuje de losetas, fósiles, laboratorio, mercado, eventos y bots.
+
+El juego publicado (`index.html`) va precompilado: un solo `juego.js`, CSS estático y
+librerías en `vendor/`. La fuente sigue siendo HTML, CSS y módulos JSX sin framework;
+`desarrollo.html` los compila en el navegador para editar sin build.
 
 ## Jugar en local
 
-Requiere un servidor estático (los módulos no cargan con `file://`):
+Una vez: `npm install`.
+
+Doble clic en `servir.cmd` (compila y sirve) o:
 
 ```
+npm run build
 npx -y http-server -p 8123 -c-1 .
 ```
 
-O doble clic en `servir.cmd`. Abrir `http://localhost:8123/`.
+Abrir `http://localhost:8123/` (versión rápida) o `http://localhost:8123/desarrollo.html`
+(cargador con Babel, útil mientras se edita `src/`).
+
+## Compilar
+
+`npm run build` genera `juego.js` y `estilos/app.css` desde `src/` y `estilos/`. Hay que
+repetirlo tras tocar módulos, clases de Tailwind o `tailwind.config.js`. La lista de
+módulos y su orden viven en `desarrollo.html`.
+
 
 ## Pantallas
 

@@ -1,0 +1,4 @@
+/* Fossilis · entrada de Tailwind. El resultado se concatena con gabinete.css y escena.css. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
