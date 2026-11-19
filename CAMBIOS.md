@@ -312,5 +312,22 @@ temas (Modular, Libreta, Sección) no cambia.
   por las juntas.
 - Losetas con canto del mismo material en sombra (dos vetas, como un estrato) y más altura; las pilas
   de dos enseñan la junta y el material de la de abajo. El foso, más hondo.
+
+## Arranque precompilado (noviembre 2026)
+
+- `index.html` ya no compila en el navegador: carga `juego.js` (los 32 módulos unidos y minificados),
+  una sola hoja `estilos/app.css` y las librerías desde `vendor/`. Fuera del arranque: Tailwind CDN,
+  Babel standalone, Google Fonts y los CDN de React, anime y three.
+- `herramientas/compilar.mjs` (`npm run build`) envuelve cada módulo en su función, los une con esbuild
+  y compila Tailwind (`tailwind.config.js`) fundiéndolo con fuentes locales, `gabinete.css` y
+  `escena.css`. `herramientas/fuentes.mjs` baja las familias a `vendor/fuentes`.
+- `desarrollo.html` conserva el cargador para editar sin build, ahora con los `fetch` en paralelo.
+  La lista `MODULOS` de ese archivo sigue siendo la única fuente de orden.
+- Medición en la misma máquina, caché tibia: de 1,6–3,3 s a 0,19–0,28 s hasta la portada.
+  El juego en pantalla (semilla fija) comparó 228 nodos y 0 diferencias de estilo entre ambos modos.
+- `servir.cmd` compila antes de servir y `publicar.ps1` compila y publica solo el bundle y `vendor/`.
+
+## Losetas que caben en su celda (noviembre 2026)
+
 - Arreglo en móvil: cara y canto de cada loseta caben en su celda (la cara se acorta lo que mide el
   canto) y las alturas bajan (8 / 14 px); antes el canto pisaba la fila de abajo y las pilas se montaban.

@@ -289,6 +289,6 @@ for (const s of salidas) {
   mkdirSync(dirname(s.ruta), { recursive: true });
   writeFileSync(s.ruta, s.texto);
 }
-writeFileSync('index.html', nuevo);
+writeFileSync('desarrollo.html', nuevo);
 console.log('\nListo: ' + salidas.length + ' módulos + index.html (' + nuevo.length + ' B). Original en _respaldo/.');
 

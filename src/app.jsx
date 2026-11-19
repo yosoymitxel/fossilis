@@ -31,3 +31,6 @@ function App(){
   return <TemaCtx.Provider value={[tema,setTema]}>{pantalla}</TemaCtx.Provider>;
 }
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+// Marca de arranque: útil para comparar el cargador de desarrollo con juego.js.
+if(typeof performance!=='undefined' && performance.mark) performance.mark('fossilis:listo');
+console.info('Fossilis · listo en ' + Math.round(performance.now()) + ' ms');

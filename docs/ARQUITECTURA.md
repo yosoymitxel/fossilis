@@ -4,24 +4,28 @@ Mapa y contrato del código tras la modularización (fase 1b). El monolito origi
 referencia en `_respaldo/index.original.html`; nada del juego se reescribió: cada módulo es un
 corte exacto del original más su cabecera de dependencias y su exportación.
 
-## Cómo se carga (sin build)
+## Cómo se carga
 
-`index.html` ya no contiene el juego: es la ficha de carga (225 líneas).
+`index.html` es la ficha de la versión rápida: hoja única `estilos/app.css` (fuentes locales,
+Tailwind precompilado, `gabinete.css` y `escena.css`), librerías en `vendor/` (React 18,
+ReactDOM 18, anime.js v4 y three.js) y un solo `juego.js` con los 32 módulos ya compilados y
+minificados. El splash pinta con CSS crítico embebido antes de que llegue la hoja.
 
-1. Librerías por `<script src>`: React 18, ReactDOM 18, anime.js v4 (UMD, único motor de
-   movimiento) y Babel standalone.
-2. Un cargador propio recorre la lista `MODULOS` (única fuente de orden en `index.html`), hace
-   `fetch` de cada archivo, lo compila con `Babel.transform` (preset react, runtime classic,
-   sourceType script) y lo ejecuta en orden. Si un módulo falla, lo dice en consola y en el
-   splash, y se detiene.
-3. Cada módulo publica su API en el espacio global `FG`: `FG.data`, `FG.core`, `FG.fx`, `FG.ui`.
+`desarrollo.html` conserva el cargador histórico: pide los `src/*` en paralelo, los compila con
+Babel standalone (preset react, runtime classic, `sourceType: script`) y los ejecuta en orden de
+dependencias. Sirve para editar sin compilar; no se publica. La lista `MODULOS` de ese archivo es
+la única fuente de orden y `herramientas/compilar.mjs` la lee para armar el bundle.
 
-Requiere servidor estático (los `fetch` no funcionan con `file://`):
+`npm run build` hace dos cosas: envuelve cada módulo en su propia función (como hacía el `eval`)
+y los une con esbuild, y compila Tailwind (`tailwind.config.js`) fundiéndolo con las hojas del
+proyecto. Las fuentes de Google se sirven desde `vendor/fuentes` (ver `herramientas/fuentes.mjs`).
+
+Requiere servidor estático (los `fetch` de desarrollo no funcionan con `file://`):
 `npx -y http-server -p 8123 -c-1` (o doble clic en `servir.cmd`).
 
 ## Reglas de la casa
 
-- Orden de carga = lista `MODULOS` en `index.html`; un módulo solo lee buckets ya cargados.
+- Orden de carga = lista `MODULOS` en `desarrollo.html`; un módulo solo lee buckets ya cargados.
 - `data/`: solo datos. Nada ejecuta.
 - `core/`: JS puro, sin DOM ni React. El azar entra por `sembrar / rnd / ri` (API de `core/azar`).
 - `fx/`: efectos y audio. No conocen reglas del juego; reciben nodos o datos.
@@ -84,8 +88,12 @@ lo carga antes que los módulos.
 
 ## Herramientas
 
+- `herramientas/compilar.mjs`: arma `juego.js` (esbuild, un IIFE por módulo) y `estilos/app.css`
+  (Tailwind + fuentes locales + salas + escena). Es el build de publicación (`npm run build`).
+- `herramientas/fuentes.mjs`: descarga las familias de Google Fonts a `vendor/fuentes` y escribe
+  `estilos/fuentes.css`. Se ejecuta solo cuando cambian las familias o sus pesos.
 - `herramientas/partir.mjs`: reparte el monolito por rangos verificados y regenera `src/` e
-  `index.html` (idempotente: siempre lee `_respaldo/index.original.html`). Las correcciones de
+  `desarrollo.html` (idempotente: siempre lee `_respaldo/index.original.html`). Las correcciones de
   costura viven en sus especificaciones.
 - `herramientas/auditar.mjs`: cruza las exportaciones `FG` contra el uso real de cada archivo.
   Hoy limpio (el falso positivo conocido de `puntuacion.js` vive en su lista de ignorados).
@@ -126,7 +134,8 @@ Evidencia en `docs/evidencia/temas/`; gates: lint 0 FAIL / 4 WARN, inspector 0 F
 documentado; `motion` quedó retirado de `index.html`.
 - Retratos de dinosaurio: cargan paleoarte real; sin imagen, el placeholder de Kalam
 con el Emblema es el estado correcto.
-- Tailwind CDN y Babel en navegador avisan en consola (prototipo; aceptado).
+- El modo desarrollo (`desarrollo.html`) mantiene Tailwind CDN y Babel en navegador: avisan en
+  consola y tardan ~2 s más. La versión publicada no los usa.
 - La partida no se persiste entre recargas (decisión de prototipo).
 - Partida a 768: usa el layout móvil; la barra inferior fija puede tapar la primera fila
   de acciones hasta hacer scroll. Es comportamiento previo, no del sistema de temas; no
