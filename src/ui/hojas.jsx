@@ -1,7 +1,7 @@
 const {useState, useMemo, useEffect} = React;
-const {BONE, MAT, CHAR, CHAR_KEYS, SKILL_SLOT_VP, TEX_URL} = FG.data;
+const {BONE, MAT, CHAR, CHAR_KEYS, SKILL_SLOT_VP} = FG.data;
 const {has, bonePlaster, labCap, marketCap, totalBones, step, DIRS, ortho} = FG.core;
-const {ERA_COL, eraDe, Silueta} = FG.ui;
+const {ERA_COL, eraDe, Silueta, TEX_URL} = FG.ui;
 const {Hoja, DinoCard, MarketCard, Btn, BtnEra, BtnEraSec, Peon, Frags} = FG.ui;
 const {Bone, Hammer, Yeso, Ico, IcoDino, AvisoIco} = FG.ui;
 const {flotanteEn, PALETA, anillo} = FG.fx;

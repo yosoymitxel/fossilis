@@ -57,4 +57,16 @@ for (const [ruta, propios] of Object.entries(definidores)) {
   }
   if (faltan.length) { fallos++; console.log(ruta + '\n  ' + faltan.join('\n  ')); }
 }
+// Cada nombre pedido a FG.<cubo> tiene que exportarlo un módulo de ese cubo (src/<cubo>/).
+const cuboDe = {};
+for (const [ruta, nombres] of Object.entries(definidores)) {
+  const c = (ruta.match(/^src\/(data|core|fx|ui)\//) || [])[1];
+  if (c) for (const n of nombres) cuboDe[n] = c;
+}
+for (const ruta of Object.keys(definidores)) {
+  const texto = readFileSync(ruta, 'utf8');
+  for (const m of texto.matchAll(/const \{([^}]*)\} = FG\.(data|core|fx|ui);/g))
+    for (const n of m[1].split(',').map(x => x.trim()).filter(Boolean))
+      if (cuboDe[n] && cuboDe[n] !== m[2]) { fallos++; console.log(ruta + '\n  ' + n + ' se pide a FG.' + m[2] + ' pero está en FG.' + cuboDe[n]); }
+}
 console.log(fallos ? '\n' + fallos + ' archivos con referencias sin importar.' : 'Todo importado.');

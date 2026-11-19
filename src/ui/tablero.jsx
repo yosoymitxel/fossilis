@@ -1,7 +1,7 @@
 const {MAT} = FG.data;
 const {DIR_ES} = FG.core;
 const {Ic, Bone, TEX_URL} = FG.ui;
-const {Peon, Frags} = FG.ui;
+const {Frags} = FG.ui;
 const {repartir} = FG.ui;
 function Cell({g, i, hi, dim, onClick, arrows, onArrow}){
   const stack = g.cells[i];
@@ -11,7 +11,7 @@ function Cell({g, i, hi, dim, onClick, arrows, onArrow}){
   const piezas = open ? repartir(g.pits[i], i) : [];
   return (
     <div className="celda-3d relative aspect-square" data-cell={i}>
-      <div className={'capa w-full h-full '+(dim?'opacity-25':'')}>
+      <div className={'capa w-full h-full '+(dim?'apagada':'')}>
         <div onClick={onClick} role={onClick?'button':undefined} tabIndex={onClick?0:-1}
           aria-label={open ? 'Fosa abierta, '+(g.pits[i].length ? g.pits[i].length+(g.pits[i].length===1?' pieza':' piezas') : 'vacía') : 'Loseta de '+MAT[top.mat].es+(stack.length===2?', apilada':'')+(pawn?', con '+pawn.name: '')}
           aria-disabled={onClick&&dim?true:undefined}
@@ -33,21 +33,13 @@ function Cell({g, i, hi, dim, onClick, arrows, onArrow}){
             : <span className="absolute bottom-[3px] right-[3px] opacity-90"><Frags t={top} s={11}/></span>}
         </div>
       </div>
-      {pawn && <div className="peon-capa">
-        <span className="peon-3d relative">
-          <span className="peon-sombra" aria-hidden="true"/>
-          <span data-peon={pawn.id}
-            className={'relative block '+(stack.length===2?'-translate-y-[5px]':stack.length===1?'-translate-y-[1px]':'')}>
-            <Peon color={pawn.color} letra={pawn.name[0].toUpperCase()} s={24} activo={pawn.id===g.turn}/></span>
-        </span>
-      </div>}
       {arrows && <div className="flechas-3d absolute -inset-2 sm:-inset-1 grid grid-cols-3 grid-rows-3 z-20">
         {[['','N',''],['O','','E'],['','S','']].flat().map((d,k)=> d
           ? <button key={k} onClick={e=>{e.stopPropagation(); onArrow(d);}} disabled={!arrows[d]}
               aria-label={'Empujar hacia '+DIR_ES[d]}
-              className="brota flex items-center justify-center text-[17px] font-bold bg-esquisto/95 rounded-md disabled:opacity-10 disabled:border-transparent disabled:text-tenue"
-              style={arrows[d]?{border:'1.5px solid rgb(var(--acento))', color:'rgb(var(--acento))', boxShadow:'0 2px 0 rgba(0,0,0,.5)'}:{}}>
-              {d==='N'?'↑':d==='S'?'↓':d==='E'?'→':'←'}</button>
+              className={'flecha '+(arrows[d]?'brota':'bloqueada')} style={{animationDelay:({N:0,E:30,S:60,O:90})[d]+'ms'}}>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style={{transform:'rotate('+({N:0,E:90,S:180,O:270})[d]+'deg)'}}>
+                <path d="M12 3l7 8h-4.5v10h-5V11H5z" fill="currentColor"/></svg></button>
           : <span key={k}/>)}
       </div>}
     </div>

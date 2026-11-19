@@ -331,3 +331,14 @@ temas (Modular, Libreta, Sección) no cambia.
 
 - Arreglo en móvil: cara y canto de cada loseta caben en su celda (la cara se acorta lo que mide el
   canto) y las alturas bajan (8 / 14 px); antes el canto pisaba la fila de abajo y las pilas se montaban.
+
+## Tablero: capas, mercado y flechas (noviembre 2026)
+
+- Mercado en negro: `hojas.jsx` pedía `TEX_URL` a `FG.data` (vive en `FG.ui`) y React caía al pintar
+  tus losetas. El auditor ahora comprueba que cada nombre se pida al cubo `FG.*` que lo exporta.
+- Peones en un plano propio sobre la rejilla: ya no quedan bajo una loseta vecina ni desaparecen.
+- Casillas atenuadas con filtro sobre la pieza, no con opacidad sobre la capa (aplanaba el 3D).
+- Flechas dibujadas; las bloqueadas salen ya apagadas, sin animarse primero como activas.
+- Hover de losetas solo con ratón (en táctil se quedaba pegado y la loseta se levantaba).
+- Los avisos salen en la línea de estado bajo el tablero, no flotando sobre él; la loseta que vuela al
+  marcador lleva cara y canto. Estilos de canto acotados al tablero (las fichas de las hojas, aparte).

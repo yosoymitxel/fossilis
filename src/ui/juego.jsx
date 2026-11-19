@@ -204,9 +204,10 @@ function Game({g, setG, onRestart}){
         const paso = ({N:[0,-1],S:[0,1],E:[1,0],O:[-1,0]})[g.fx.dir] || [0,0], r = el && el.getBoundingClientRect();
         polvo(el, MAT[c.mat].bg, paso);
         if(r) vuela(el, document.querySelector('[data-hud="losetas"]'), d=>{
-          d.style.background = MAT[c.mat].bg; d.style.borderRadius = '6px';
-          d.style.boxShadow = '0 4px 0 rgba(0,0,0,.45)';
-        }, {dx:paso[0]*r.width*.9, dy:paso[1]*r.height*.9, retraso:200, fin:.28});
+          const m = MAT[c.mat].bg;
+          d.style.background = m; d.style.borderRadius = '5px';
+          d.style.boxShadow = 'inset 0 2px 0 rgba(255,255,255,.35), 0 2px 0 color-mix(in srgb,'+m+' 70%,#140b05), 0 4px 0 color-mix(in srgb,'+m+' 52%,#140b05), 0 10px 12px -4px rgba(0,0,0,.6)';
+        }, {lado:r.width*.6, dx:paso[0]*r.width*.75, dy:paso[1]*r.height*.75, retraso:240, fin:.32, dura:700});
       });
     }
     if(g.fx.k==='extract'){
@@ -497,10 +498,19 @@ function Game({g, setG, onRestart}){
                       arrows={sel && (sel.m==='dig'||(sel.m==='tool'&&tool&&tool.eff.t==='slide')) && sel.from===i ? arrowsFor(i) : null}
                       onArrow={d=> sel.m==='dig' ? run('dig',{from:i, dir:d}) : run('tool',{toolIndex:sel.ti, from:i, dir:d})}/>)}
                 </div>
+                <div className="peones grid grid-cols-5 grid-rows-5 gap-1.5 lg:gap-2.5" aria-hidden="true">
+                  {g.players.filter(q=>q.pos!==null).map(q=>{ const h = g.cells[q.pos].length;
+                    return <div key={q.id} className="peon-casilla" style={{gridColumn:(q.pos%5)+1, gridRow:Math.floor(q.pos/5)+1}}>
+                      <span className="peon-sombra"/>
+                      <span data-peon={q.id} className={'relative block '+(h===2?'-translate-y-[5px]':h===1?'-translate-y-[1px]':'')}>
+                        <Peon color={q.color} letra={q.name[0].toUpperCase()} s={24} activo={q.id===g.turn}/></span>
+                    </div>; })}
+                </div>
               </div>
             </div>
 
-            <p className="mt-2.5 lg:mt-3 text-[13px] text-hueso/80 min-h-[18px] lg:max-w-[calc(100svh-260px)] lg:mx-auto lg:w-full">
+            <p role="status" aria-live="polite" className="estado mt-2.5 lg:mt-3 text-[13px] text-hueso/80 min-h-[18px] lg:max-w-[calc(100svh-260px)] lg:mx-auto lg:w-full">
+              {toast ? <span key={toast.id} className="aviso">{toast.t}</span> : <>
               {sel && sel.m==='dig' && (sel.from===undefined ? 'Elige la loseta que vas a empujar.' : 'Elige hacia dónde la empujas.')}
               {sel && sel.m==='move' && 'Elige dónde plantarte.'}
               {sel && sel.m==='extract' && 'Elige una fosa abierta a tu lado.'}
@@ -510,7 +520,7 @@ function Game({g, setG, onRestart}){
               {!sel && hum && g.phase==='actions' && (g.energy>0 ? 'Te quedan '+g.energy+' de energía.' : 'Sin energía. Pasa al mercado.')}
               {!sel && hum && g.phase==='market' && ('Puedes comprar '+(marketCap(p)>1?'hasta '+marketCap(p)+' cartas':'una carta')+' con tus fragmentos.')}
               {!sel && hum && g.phase==='lab' && 'Puedes llevarte un dinosaurio al laboratorio.'}
-              {p.isAI && 'El bot está resolviendo su turno.'}
+              {p.isAI && 'El bot está resolviendo su turno.'}</>}
             </p>
 
             <div className="hidden lg:block mt-2 space-y-2 min-h-[60px] lg:max-w-[calc(100svh-260px)] lg:mx-auto lg:w-full">{avisos}</div>
@@ -555,8 +565,7 @@ function Game({g, setG, onRestart}){
       {banda && !cola.length && <Banda key={banda.id} banda={banda}/>}
       {cola.length>0 && <Momento key={cola[0].id || 'apertura'} m={cola[0]} sobre3d={usa3D && sabe3D()===true} onFin={()=>setCola(c=>c.slice(1))}/>}
 
-      {toast && <div key={toast.id} role="status" aria-live="polite" className="flota fixed left-1/2 -translate-x-1/2 top-[86px] lg:top-auto lg:bottom-6 z-40 pointer-events-none max-w-[90vw] px-3.5 py-2 rounded-full bg-hueso text-esquisto text-[12px] font-medium"
-        style={{boxShadow:'0 4px 0 rgba(0,0,0,.4), 0 12px 20px -8px rgba(0,0,0,.7)'}}>{toast.t}</div>}
+
 
       {evt && <Hoja title={evt.n} sub="Evento" onClose={()=>setEvt(null)}>
         <div className="flex gap-3 items-start">

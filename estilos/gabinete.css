@@ -186,9 +186,11 @@ body::after{
     inset 0 1px 0 rgba(255,255,255,.34),inset 0 -2px 0 rgba(0,0,0,.30);
 }
 .pickable{cursor:pointer}
-.pickable:hover{filter:brightness(1.14);transform:translateZ(18px)}
+@media (hover:hover) and (pointer:fine){   /* en táctil el hover se queda pegado tras tocar */
+  .pickable:hover{filter:brightness(1.14);transform:translateZ(18px)}
+  .h2.pickable:hover{transform:translateZ(32px)}
+}
 .pickable:active{filter:brightness(1.22);transform:translateZ(6px)}
-.h2.pickable:hover{transform:translateZ(32px)}
 .h2.pickable:active{transform:translateZ(10px)}
 .glow{box-shadow:0 0 0 2px rgb(var(--acento)),0 5px 0 rgba(0,0,0,.5),0 14px 20px -6px rgba(0,0,0,.7)} /* taste-skill-ignore */
 .glow2{box-shadow:0 0 0 2px rgb(var(--acento)),0 8px 0 rgba(0,0,0,.5),0 22px 28px -8px rgba(0,0,0,.8)} /* taste-skill-ignore */

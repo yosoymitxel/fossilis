@@ -149,26 +149,27 @@
 .con-3d > header{background:linear-gradient(rgb(8 11 18 / .86),rgb(8 11 18 / .62)) !important;border-bottom-color:rgb(255 211 138 / .18) !important;
   box-shadow:none !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .con-3d > nav{background:rgb(8 11 18 / .78) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.con-3d .carta-fisica{background:rgb(13 16 22 / .8)}
 .con-3d aside .bg-sedimento\/40,.con-3d .btn-fisico.bg-sedimento{background-color:rgb(13 16 22 / .8)}
 /* Losetas con cuerpo: el canto es el mismo material en sombra, en dos vetas (estrato); la pila de dos
    enseña la junta y el material de la loseta de abajo. Solo en la sala oscura; las claras tienen el suyo. */
-[data-sala="vitrina"] .tile{
+[data-sala="vitrina"] .celda-3d .tile{
   --canto:color-mix(in srgb,var(--mat) 52%,#140b05);--veta:color-mix(in srgb,var(--mat) 70%,#140b05);
   --canto2:color-mix(in srgb,var(--mat2) 52%,#140b05);--veta2:color-mix(in srgb,var(--mat2) 70%,#140b05)}
 /* Cara + canto caben en su celda (la cara se acorta lo que mide el canto): la junta sigue a la vista y
    ninguna loseta pisa la fila de abajo. Alturas bajas para que la perspectiva no agrande las pilas. */
-[data-sala="vitrina"] .tile.h1{height:calc(100% - 5px);transform:translateZ(8px);
+[data-sala="vitrina"] .celda-3d .tile.h1{height:calc(100% - 5px);transform:translateZ(8px);
   box-shadow:inset 0 2px 0 rgb(255 255 255 / .3),inset 0 -2px 0 rgb(0 0 0 / .18), /* taste-skill-ignore: loseta física */
     0 2px 0 var(--veta),0 5px 0 var(--canto),0 8px 8px -4px rgb(0 0 0 / .65)}
-[data-sala="vitrina"] .tile.h2{height:calc(100% - 9px);transform:translateZ(14px);
+[data-sala="vitrina"] .celda-3d .tile.h2{height:calc(100% - 9px);transform:translateZ(14px);
   box-shadow:inset 0 2px 0 rgb(255 255 255 / .34),inset 0 -2px 0 rgb(0 0 0 / .18), /* taste-skill-ignore: pila física */
     0 2px 0 var(--veta),0 4px 0 var(--canto),0 5px 0 rgb(0 0 0 / .55),
     0 7px 0 var(--veta2),0 9px 0 var(--canto2),0 12px 10px -5px rgb(0 0 0 / .7)}
-[data-sala="vitrina"] .tile.h1.pickable:hover{transform:translateZ(14px)}
-[data-sala="vitrina"] .tile.h2.pickable:hover{transform:translateZ(20px)}
-[data-sala="vitrina"] .tile.pickable:active{transform:translateZ(5px)}
-[data-sala="vitrina"] .pit{box-shadow:inset 0 14px 18px rgb(0 0 0 / .95),inset 0 -2px 0 rgb(255 255 255 / .05),inset 0 0 0 1px rgb(0 0 0 / .6)} /* taste-skill-ignore: hondo del foso */
+@media (hover:hover) and (pointer:fine){
+  [data-sala="vitrina"] .celda-3d .tile.h1.pickable:hover{transform:translateZ(14px)}
+  [data-sala="vitrina"] .celda-3d .tile.h2.pickable:hover{transform:translateZ(20px)}
+}
+[data-sala="vitrina"] .celda-3d .tile.pickable:active{transform:translateZ(5px)}
+[data-sala="vitrina"] .celda-3d .pit{box-shadow:inset 0 14px 18px rgb(0 0 0 / .95),inset 0 -2px 0 rgb(255 255 255 / .05),inset 0 0 0 1px rgb(0 0 0 / .6)} /* taste-skill-ignore: hondo del foso */
 
 /* Las losetas, bajo los focos de trabajo: un poco de calor para que casen con el foso iluminado */
 .con-3d .tile{filter:sepia(.12) saturate(1.05)}
@@ -178,6 +179,23 @@
 [data-montaje="montando"] > header,[data-montaje="montando"] > nav,[data-montaje="montando"] aside{animation:entra .5s var(--sale) backwards}
 .con-3d main > p{color:#F4EFE4;text-shadow:0 1px 3px rgb(0 0 0 / .85)} /* taste-skill-ignore: texto sobre el suelo iluminado */
 .sobre3d.momento{background:radial-gradient(ellipse at 50% 55%,rgb(7 9 11 / .1),rgb(7 9 11 / .55) 75%)}
+
+/* ---- Tablero: peones, atenuado, flechas y avisos -------------------------------- */
+/* Los peones van en un plano propio por encima de todas las losetas: nunca quedan debajo de una vecina. */
+.peones{position:absolute;inset:0;pointer-events:none;z-index:15;transform:translateZ(30px);transform-style:preserve-3d}
+.peon-casilla{position:relative;display:flex;align-items:center;justify-content:center;container-type:inline-size}
+.peones span[data-peon] svg{width:clamp(22px,44cqw,40px);height:auto}
+@media (prefers-reduced-motion: reduce){ .peones{transform:none} }
+html[data-anim="off"] .peones{transform:none}
+.peones .peon-sombra{width:clamp(17px,40%,34px)}
+/* Atenuar con filtro en la pieza, no con opacidad en la capa: la opacidad aplana el 3D y desordena el dibujo. */
+.apagada .tile,.apagada .pit{filter:brightness(.42) saturate(.5)}
+.capa .tile,.capa .pit{transition:filter .2s ease,box-shadow .2s ease,transform .2s var(--sale)}
+.flecha{display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgb(13 15 16 / .95);
+  color:rgb(var(--acento));border:1.5px solid rgb(var(--acento));box-shadow:0 2px 0 rgb(0 0 0 / .5)} /* taste-skill-ignore: tecla física */
+.flecha.bloqueada{opacity:.14;border-color:transparent;color:rgb(var(--tenue));box-shadow:none}
+.flecha:active{transform:scale(.92)}
+.estado .aviso{display:block;animation:entra .3s var(--sale) backwards}
 
 /* ---- Cabecera de partida: energía, PV y contadores ------------------------------ */
 .pip{width:7px;height:16px;border-radius:2px;background:rgb(var(--acento));
