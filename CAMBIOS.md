@@ -312,3 +312,5 @@ temas (Modular, Libreta, Sección) no cambia.
   por las juntas.
 - Losetas con canto del mismo material en sombra (dos vetas, como un estrato) y más altura; las pilas
   de dos enseñan la junta y el material de la de abajo. El foso, más hondo.
+- Arreglo en móvil: cara y canto de cada loseta caben en su celda (la cara se acorta lo que mide el
+  canto) y las alturas bajan (8 / 14 px); antes el canto pisaba la fila de abajo y las pilas se montaban.

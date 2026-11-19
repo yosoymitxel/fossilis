@@ -156,16 +156,18 @@
 [data-sala="vitrina"] .tile{
   --canto:color-mix(in srgb,var(--mat) 52%,#140b05);--veta:color-mix(in srgb,var(--mat) 70%,#140b05);
   --canto2:color-mix(in srgb,var(--mat2) 52%,#140b05);--veta2:color-mix(in srgb,var(--mat2) 70%,#140b05)}
-[data-sala="vitrina"] .tile.h1{transform:translateZ(14px);
-  box-shadow:inset 0 2px 0 rgb(255 255 255 / .3),inset 0 -3px 0 rgb(0 0 0 / .2), /* taste-skill-ignore: loseta física */
-    0 3px 0 var(--veta),0 7px 0 var(--canto),0 12px 14px -3px rgb(0 0 0 / .7)}
-[data-sala="vitrina"] .tile.h2{transform:translateZ(28px);
-  box-shadow:inset 0 2px 0 rgb(255 255 255 / .34),inset 0 -3px 0 rgb(0 0 0 / .2), /* taste-skill-ignore: pila física */
-    0 3px 0 var(--veta),0 6px 0 var(--canto),0 7px 0 rgb(0 0 0 / .55),
-    0 10px 0 var(--veta2),0 14px 0 var(--canto2),0 20px 18px -4px rgb(0 0 0 / .72)}
-[data-sala="vitrina"] .tile.h1.pickable:hover{transform:translateZ(22px)}
-[data-sala="vitrina"] .tile.h2.pickable:hover{transform:translateZ(36px)}
-[data-sala="vitrina"] .tile.pickable:active{transform:translateZ(10px)}
+/* Cara + canto caben en su celda (la cara se acorta lo que mide el canto): la junta sigue a la vista y
+   ninguna loseta pisa la fila de abajo. Alturas bajas para que la perspectiva no agrande las pilas. */
+[data-sala="vitrina"] .tile.h1{height:calc(100% - 5px);transform:translateZ(8px);
+  box-shadow:inset 0 2px 0 rgb(255 255 255 / .3),inset 0 -2px 0 rgb(0 0 0 / .18), /* taste-skill-ignore: loseta física */
+    0 2px 0 var(--veta),0 5px 0 var(--canto),0 8px 8px -4px rgb(0 0 0 / .65)}
+[data-sala="vitrina"] .tile.h2{height:calc(100% - 9px);transform:translateZ(14px);
+  box-shadow:inset 0 2px 0 rgb(255 255 255 / .34),inset 0 -2px 0 rgb(0 0 0 / .18), /* taste-skill-ignore: pila física */
+    0 2px 0 var(--veta),0 4px 0 var(--canto),0 5px 0 rgb(0 0 0 / .55),
+    0 7px 0 var(--veta2),0 9px 0 var(--canto2),0 12px 10px -5px rgb(0 0 0 / .7)}
+[data-sala="vitrina"] .tile.h1.pickable:hover{transform:translateZ(14px)}
+[data-sala="vitrina"] .tile.h2.pickable:hover{transform:translateZ(20px)}
+[data-sala="vitrina"] .tile.pickable:active{transform:translateZ(5px)}
 [data-sala="vitrina"] .pit{box-shadow:inset 0 14px 18px rgb(0 0 0 / .95),inset 0 -2px 0 rgb(255 255 255 / .05),inset 0 0 0 1px rgb(0 0 0 / .6)} /* taste-skill-ignore: hondo del foso */
 
 /* Las losetas, bajo los focos de trabajo: un poco de calor para que casen con el foso iluminado */
