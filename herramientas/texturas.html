@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Texturas de losetas</title>
+<script type="importmap">{"imports": {"three": "../vendor/three/three.module.js", "three/addons/": "../vendor/three/addons/"}}</script>
+</head>
+<body style="margin:0;background:#111">
+<script type="module">
+// Fossilis · texturas de losetas: renderiza un suelo de polyfork.dev desde arriba con luz rasante y lo pasa a
+// relieve en gris (luminancia con contraste estirado). El juego lo funde sobre el color de cada material.
+// Lo usa herramientas/texturas.mjs; también se puede abrir a mano y llamar a textura(id).
+import * as THREE from 'three';
+const LADO = 256;
+const renderer = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
+renderer.setSize(LADO, LADO); renderer.setPixelRatio(1);
+window.textura = async (id, recorte=.5) => {
+  const {createAsset} = await import('https://polyfork.dev/cdn/'+id+'.mjs');
+  const obj = createAsset();
+  const scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x404040, 1.1));
+  const sol = new THREE.DirectionalLight(0xffffff, 2.6); sol.position.set(-4, 3, -3); scene.add(sol);
+  scene.add(obj);
+  const caja = new THREE.Box3().setFromObject(obj), c = caja.getCenter(new THREE.Vector3()), t = caja.getSize(new THREE.Vector3());
+  const m = Math.min(t.x, t.z)*recorte/2;
+  const cam = new THREE.OrthographicCamera(-m, m, m, -m, .01, 100);
+  cam.position.set(c.x, caja.max.y+5, c.z); cam.up.set(0,0,-1); cam.lookAt(c.x, c.y, c.z);
+  renderer.render(scene, cam);
+  // A gris: luminancia, estirada entre los percentiles 2 y 98 para que el relieve use todo el rango.
+  const lienzo = document.createElement('canvas'); lienzo.width = lienzo.height = LADO;
+  const ctx = lienzo.getContext('2d'); ctx.drawImage(renderer.domElement, 0, 0);
+  const img = ctx.getImageData(0, 0, LADO, LADO), px = img.data, lum = new Float32Array(LADO*LADO);
+  for(let i=0;i<lum.length;i++) lum[i] = .299*px[i*4] + .587*px[i*4+1] + .114*px[i*4+2];
+  const orden = Float32Array.from(lum).sort(), lo = orden[Math.floor(lum.length*.02)], hi = orden[Math.floor(lum.length*.98)];
+  for(let i=0;i<lum.length;i++){
+    const v = Math.max(0, Math.min(255, (lum[i]-lo)/Math.max(1, hi-lo)*255));
+    px[i*4] = px[i*4+1] = px[i*4+2] = v; px[i*4+3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  return lienzo.toDataURL('image/png');
+};
+window.listo = true;
+</script>
+</body></html>

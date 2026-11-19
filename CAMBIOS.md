@@ -342,3 +342,14 @@ temas (Modular, Libreta, Sección) no cambia.
 - Hover de losetas solo con ratón (en táctil se quedaba pegado y la loseta se levantaba).
 - Los avisos salen en la línea de estado bajo el tablero, no flotando sobre él; la loseta que vuela al
   marcador lleva cara y canto. Estilos de canto acotados al tablero (las fichas de las hojas, aparte).
+
+## Superficie de las losetas, bandeja de arenisca e iconos (noviembre 2026)
+
+- Losetas con superficie viva: relieve de suelos 3D de polyfork.dev (arena seca, arena húmeda en
+  capas para la arcilla, losa agrietada para la piedra) renderizados desde arriba con luz rasante y
+  pasados a gris; se funden sobre el color del material (`soft-light`) y cada loseta los gira distinto.
+  Se regeneran con `node herramientas/texturas.mjs` (Playwright, servidor en marcha) en `estilos/losetas/`.
+- En partida, paredes de arenisca de polyfork cierran el tajo por detrás y los lados, como la bandeja del
+  juego de mesa; por delante quedan bajas.
+- Iconos: martillo de dos cabezas en las fosas (antes parecía un pincel), cubo para el yeso (como los
+  cubos del juego físico) y mochila para el equipo.

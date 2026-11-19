@@ -169,6 +169,14 @@
   [data-sala="vitrina"] .celda-3d .tile.h2.pickable:hover{transform:translateZ(20px)}
 }
 [data-sala="vitrina"] .celda-3d .tile.pickable:active{transform:translateZ(5px)}
+/* Superficie viva: relieve de un suelo 3D renderizado (herramientas/texturas.mjs) fundido sobre el color del
+   material, girado distinto en cada loseta. Sustituye al patrón plano en la sala oscura. */
+[data-sala="vitrina"] .celda-3d .tile .textura{display:none}
+[data-sala="vitrina"] .celda-3d .tile::before{content:"";position:absolute;inset:-21%;pointer-events:none;
+  background:var(--tex) center/cover;mix-blend-mode:soft-light;opacity:var(--tex-k,.5);transform:rotate(var(--giro,0deg))}
+[data-sala="vitrina"] .celda-3d .tile[data-mat="sand"]{--tex:url(losetas/arena.png)}
+[data-sala="vitrina"] .celda-3d .tile[data-mat="clay"]{--tex:url(losetas/arcilla.png)}
+[data-sala="vitrina"] .celda-3d .tile[data-mat="stone"]{--tex:url(losetas/piedra.png);--tex-k:.38}
 [data-sala="vitrina"] .celda-3d .pit{box-shadow:inset 0 14px 18px rgb(0 0 0 / .95),inset 0 -2px 0 rgb(255 255 255 / .05),inset 0 0 0 1px rgb(0 0 0 / .6)} /* taste-skill-ignore: hondo del foso */
 
 /* Las losetas, bajo los focos de trabajo: un poco de calor para que casen con el foso iluminado */

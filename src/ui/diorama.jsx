@@ -28,6 +28,11 @@ const PARTES = [
   ['dead-snag-0b1891', -3.5, -10.5, .8],
 ];
 const FAROL = [-5.4, 1.2];
+// En partida, la arenisca cierra el tajo por detrás y por los lados, como la bandeja del juego de mesa;
+// por delante queda baja para no tapar la última fila. [x, z, giro, altura relativa]
+const ARENISCA = 'sandstone-outcrop-75800b';
+const BANDEJA = [[-1.9,-5.2,0,1],[1.9,-5.2,Math.PI,1],[-5.2,-1.9,Math.PI/2,1],[-5.2,1.9,Math.PI/2,.8],
+  [5.2,-1.9,-Math.PI/2,1],[5.2,1.9,-Math.PI/2,.8],[-1.9,5,0,.35],[1.9,5,Math.PI,.35]];
 // Los dinosaurios del juego que tienen modelo; el resto se queda con su silueta.
 const DINO_3D = {
   'Tyrannosaurus rex':'tyrannosaurus-rex-adf79f', Stegosaurus:'stegosaurus-96f08c', Triceratops:'triceratops-6ce6f5',
@@ -46,7 +51,7 @@ const traer = id => {
 };
 const THREE_P = import('three');
 THREE_P.catch(()=>{});
-const IDS_YACIMIENTO = [...new Set(PARTES.map(p=>p[0])), 'camping-lantern-21d14b'];
+const IDS_YACIMIENTO = [...new Set(PARTES.map(p=>p[0])), 'camping-lantern-21d14b', ARENISCA];
 IDS_YACIMIENTO.forEach(id => traer(id).catch(()=>{}));
 
 const LUZ = {
@@ -139,6 +144,8 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado, encuadre, vuelo, 
           if(abajo) obj.position.y -= .12;            // medio enterrado
           scene.add(obj);
         }
+        if(plano==='tablero' && crear[ARENISCA]) BANDEJA.forEach(([x,z,r,h])=>{
+          const o = pieza(ARENISCA); o.position.set(x,-ALTO,z); o.rotation.y = r; o.scale.set(1,h*.9,1); scene.add(o); });
         if(crear['camping-lantern-21d14b']){ const f = pieza('camping-lantern-21d14b'); f.position.set(FAROL[0], .86, FAROL[1]); f.scale.setScalar(1.6); scene.add(f); }
         if(L.fuego){
           fuego = new THREE.PointLight(0xffb060, L.fuego, 16); fuego.position.set(-6.2, 1.1, 5.4); scene.add(fuego);

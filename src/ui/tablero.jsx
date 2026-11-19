@@ -3,6 +3,8 @@ const {DIR_ES} = FG.core;
 const {Ic, Bone, TEX_URL} = FG.ui;
 const {Frags} = FG.ui;
 const {repartir} = FG.ui;
+// Cada loseta gira su textura un cuarto distinto (por su id): el suelo no se ve de molde.
+const giroDe = id => ((parseInt(String(id).replace(/\D/g,''),10)||0)*7%4)*90+'deg';
 function Cell({g, i, hi, dim, onClick, arrows, onArrow}){
   const stack = g.cells[i];
   const pawn = g.players.find(p=>p.pos===i);
@@ -16,11 +18,11 @@ function Cell({g, i, hi, dim, onClick, arrows, onArrow}){
           aria-label={open ? 'Fosa abierta, '+(g.pits[i].length ? g.pits[i].length+(g.pits[i].length===1?' pieza':' piezas') : 'vacía') : 'Loseta de '+MAT[top.mat].es+(stack.length===2?', apilada':'')+(pawn?', con '+pawn.name: '')}
           aria-disabled={onClick&&dim?true:undefined}
           onKeyDown={e=>{if(onClick&&(e.key==='Enter'||e.key===' ')){e.preventDefault();onClick();}}}
-          data-tile={open?undefined:top.id}
+          data-tile={open?undefined:top.id} data-mat={open?undefined:top.mat}
           className={(open?'pit':'tile '+(stack.length===2?'h2':'h1'))+' relative w-full h-full '+(onClick?'pickable ':'')+(hi?'pulso ':'')}
-          style={Object.assign({}, open?{}:{background:MAT[top.mat].bg, color:MAT[top.mat].fg, '--mat':MAT[top.mat].bg, '--mat2':MAT[stack[0].mat].bg},
+          style={Object.assign({}, open?{}:{background:MAT[top.mat].bg, color:MAT[top.mat].fg, '--mat':MAT[top.mat].bg, '--mat2':MAT[stack[0].mat].bg, '--giro':giroDe(top.id)},
             hi?{outline:'2.5px solid rgb(var(--acento))', outlineOffset:'1px'}:{})}>
-          {!open && <svg className="absolute inset-0 w-full h-full pointer-events-none">
+          {!open && <svg className="textura absolute inset-0 w-full h-full pointer-events-none">
             <rect width="100%" height="100%" fill={TEX_URL[top.mat]}/>
             <rect width="100%" height="100%" fill="url(#grBrillo)"/></svg>}
           {open
