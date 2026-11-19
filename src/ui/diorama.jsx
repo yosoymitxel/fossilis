@@ -31,6 +31,17 @@ const FAROL = [-5.4, 1.2];
 // En partida, la arenisca cierra el tajo por detrás y por los lados, como la bandeja del juego de mesa;
 // por delante queda baja para no tapar la última fila. [x, z, giro, altura relativa]
 const ARENISCA = 'sandstone-outcrop-75800b';
+// En partida, delante del tajo (lo que en móvil queda bajo los botones): mesa de catalogar con el cráneo,
+// cajas, huesos sacados, segunda fogata con bancos y la tienda del turno de noche. [id, x, z, giro, y]
+const FRENTE = [
+  ['camp-kitchen-table-dfa2ab', 1.6, 7.2, 0], ['dinosaur-skull-4c3a3c', 1.5, 7.2, .5, .85],
+  ['folding-camp-chair-2fc7d1', 2.7, 8, 2.6], ['wooden-crate-e46521', -2.4, 6.8, .3], ['wooden-crate-e46521', -1.9, 7.4, 1],
+  ['dinosaur-bone-pile-3c285a', -1.4, 8.7, .7], ['camp-cooler-8ba941', 2.9, 9, .5], ['dinosaur-trackway-f0aec5', .2, 9.4, .3],
+  ['fossil-ribcage-b243c5', 1.5, 10.4, 2.2], ['cordwood-pile-b5229b', -2.9, 10.2, 1.57],
+  ['stone-ring-campfire-8a0c6f', -.9, 11.7, 0], ['split-log-bench-289780', -.9, 12.9, 0], ['split-log-bench-289780', .7, 11.6, 1.57],
+  ['volcanic-boulder-cluster-7e29ea', 3.3, 12.4, 0], ['canvas-ridge-tent-f0df0d', 1.8, 14.2, -.4], ['termite-mound-9bc94b', -3.1, 14, 0],
+];
+const FOGATA2 = [-.9, 11.7];
 const BANDEJA = [[-1.9,-5.2,0,1],[1.9,-5.2,Math.PI,1],[-5.2,-1.9,Math.PI/2,1],[-5.2,1.9,Math.PI/2,.8],
   [5.2,-1.9,-Math.PI/2,1],[5.2,1.9,-Math.PI/2,.8],[-1.9,5,0,.35],[1.9,5,Math.PI,.35]];
 // Los dinosaurios del juego que tienen modelo; el resto se queda con su silueta.
@@ -51,7 +62,7 @@ const traer = id => {
 };
 const THREE_P = import('three');
 THREE_P.catch(()=>{});
-const IDS_YACIMIENTO = [...new Set(PARTES.map(p=>p[0])), 'camping-lantern-21d14b', ARENISCA];
+const IDS_YACIMIENTO = [...new Set(PARTES.concat(FRENTE).map(p=>p[0])), 'camping-lantern-21d14b', ARENISCA];
 IDS_YACIMIENTO.forEach(id => traer(id).catch(()=>{}));
 
 const LUZ = {
@@ -144,6 +155,8 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado, encuadre, vuelo, 
           if(abajo) obj.position.y -= .12;            // medio enterrado
           scene.add(obj);
         }
+        if(plano==='tablero') FRENTE.forEach(([id,x,z,r,y])=>{
+          if(!crear[id]) return; const o = pieza(id); o.position.set(x, y||0, z); o.rotation.y = r; scene.add(o); });
         if(plano==='tablero' && crear[ARENISCA]) BANDEJA.forEach(([x,z,r,h])=>{
           const o = pieza(ARENISCA); o.position.set(x,-ALTO,z); o.rotation.y = r; o.scale.set(1,h*.9,1); scene.add(o); });
         if(crear['camping-lantern-21d14b']){ const f = pieza('camping-lantern-21d14b'); f.position.set(FAROL[0], .86, FAROL[1]); f.scale.setScalar(1.6); scene.add(f); }
@@ -151,6 +164,9 @@ function Diorama({hora='noche', plano, dino, cls='', onEstado, encuadre, vuelo, 
           fuego = new THREE.PointLight(0xffb060, L.fuego, 16); fuego.position.set(-6.2, 1.1, 5.4); scene.add(fuego);
           const farol = new THREE.PointLight(0xffd38a, L.fuego*.7, 11); farol.position.set(FAROL[0], 1.5, FAROL[1]); scene.add(farol);
           const tajo = new THREE.PointLight(0xcfe0e8, L.fuego*.35, 9); tajo.position.set(0, .6, 0); scene.add(tajo);
+          if(plano==='tablero'){
+            const f2 = new THREE.PointLight(0xffb060, L.fuego*1.2, 12); f2.position.set(FOGATA2[0], 1.1, FOGATA2[1]); scene.add(f2);
+          }
           if(plano==='tablero'){   // focos de trabajo sobre el tajo: el tablero es la zona iluminada de la noche
             const foco = new THREE.SpotLight(0xffe4bd, 120, 30, .42, .55, 1.4);
             foco.position.set(1.5, 11, 6); foco.target.position.set(0, 0, 0);

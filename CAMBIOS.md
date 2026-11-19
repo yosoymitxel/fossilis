@@ -353,3 +353,5 @@ temas (Modular, Libreta, Sección) no cambia.
   juego de mesa; por delante quedan bajas.
 - Iconos: martillo de dos cabezas en las fosas (antes parecía un pincel), cubo para el yeso (como los
   cubos del juego físico) y mochila para el equipo.
+- Delante del tajo (bajo los botones en móvil), campamento de trabajo con modelos de polyfork: mesa con el
+  cráneo, cajas, huesos sacados, costillar, leña, segunda fogata con bancos y tienda.
